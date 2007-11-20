@@ -1,18 +1,14 @@
-include ../Makefile.inc
+PYVER  := $(shell python -c 'import sys; print sys.version[0:3]')
+PYTHON = python$(PYVER)
+PYTHONINCLUDE = /usr/include/$(PYTHON)
 
-CFLAGS += -I$(PYTHONINCLUDE)  -fPIC
-OBJECTS = md5.o libimplantisomd5.o checkisomd5.o pyisomd5sum.c \
+CFLAGS = $(RPM_OPT_FLAGS) -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC -I$(PYTHONINCLUDE)
+OBJECTS = md5.o libimplantisomd5.o checkisomd5.o \
 	  implantisomd5 checkisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
 LDFLAGS += -lpopt -fPIC
 
 PYOBJS = pyisomd5sum.o libcheckisomd5.o libimplantisomd5.o md5.o
-
-ifeq (.depend,$(wildcard .depend))
-TARGET=all
-else
-TARGET=depend all
-endif
 
 all: implantisomd5 checkisomd5 pyisomd5sum.so	
 
@@ -35,13 +31,5 @@ install:
 	ln -s ../../bin/checkisomd5 $(DESTDIR)/usr/lib/anaconda-runtime/checkisomd5
 
 clean:
-	rm -f *.o *.lo *.so *.pyc .depend *~
+	rm -f *.o *.so *.pyc .depend *~
 	rm -f implantisomd5 checkisomd5 
-
-depend:
-	$(CPP) -M $(CFLAGS) -I$(PYTHONINCLUDE) *.c > .depend
-
-
-ifeq (.depend,$(wildcard .depend))
-include .depend
-endif
