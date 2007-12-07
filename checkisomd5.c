@@ -25,14 +25,45 @@
 #include "md5.h"
 #include "libcheckisomd5.h"
 
+struct progressCBData {
+    int quiet;
+    int gauge;
+    int gaugeat;
+    int printed_frag_status;
+};
+
+static void outputCB(void *co, long long offset, long long total) {
+    struct progressCBData *data = co;
+    int gaugeval = -1;
+
+    if (!data->quiet) {
+        if (data->printed_frag_status) {
+            printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
+            data->printed_frag_status = 0;
+        }
+        printf("\b\b\b\b\b\b%05.1f%%", (100.0*offset)/(total));
+        fflush(stdout);
+    }
+    if (data->gauge) {
+        gaugeval = (100.0*offset)/(total);
+        if (gaugeval != data->gaugeat) {
+            printf("%d\n", gaugeval);
+            fflush(stdout);
+            data->gaugeat = gaugeval;
+        }
+    }
+
+    data->printed_frag_status = 1;
+}
+
 int main(int argc, char **argv) {
     int i;
     int rc;
-    int flags;
+    struct progressCBData data;
     int verbose;
-    int gauge;
     int md5only;
     int filearg;
+    char * result;
 
     if (argc < 2) {
 	printf("Usage: checkisomd5 [--md5sumonly] [--verbose] [--gauge] <isofilename>|<blockdevice>\n\n");
@@ -40,22 +71,18 @@ int main(int argc, char **argv) {
     }
 
     md5only = 0;
-    flags = 1; /* mediaCheckFile defaults to verbose, not quiet, so prepopulate the "quiet" bit */
-    verbose = 0;
-    gauge = 1;
     filearg = 1;
+    memset(&data, 0, sizeof(struct progressCBData));
     for (i=1; i < argc; i++) {
 	if (strcmp(argv[i], "--md5sumonly") == 0) {
 	    md5only = 1;
 	    filearg++;
 	} else if (strcmp(argv[i], "--verbose") == 0) {
 	    filearg++;
-	    flags ^= 1;
-	    verbose = 1;
+            verbose = 1;
 	} else if (strcmp(argv[i], "--gauge") == 0) {
 	    filearg++;
-	    flags ^= 2;
-	    gauge = 1;
+            data.gauge = 1;
 	} else 
 	    break;
     }
@@ -66,12 +93,17 @@ int main(int argc, char **argv) {
     if (md5only)
 	exit(0);
 
-    rc = mediaCheckFile(argv[filearg], flags);
+    rc = mediaCheckFile(argv[filearg], outputCB, &data);
 
-    /* 1 means it passed, 0 means it failed, -1 means we couldnt find chksum */
-    if (rc == 1)
-	exit(0);
+    if (rc == 0)
+	result = "FAIL.\n\nIt is not recommended to use this media.";
+    else if (rc > 0)
+	result = "PASS.\n\nIt is OK to use this media.";
     else
-	exit(1);
+	result = "NA.\n\nNo checksum information available, unable to verify media.";
+
+    fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
+
+    exit (rc == 0);
 }
  
