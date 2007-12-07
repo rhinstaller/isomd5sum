@@ -32,7 +32,7 @@ libcheckisomd5.a: libcheckisomd5.a(libcheckisomd5.o md5.o)
 pyisomd5sum.so: $(PYOBJS)
 	gcc -shared -g -o pyisomd5sum.so -fpic $(PYOBJS) $(LDFLAGS)
 
-install:
+install: all
 	mkdir -p $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
 	mkdir -p $(DESTDIR)/usr/include
 	mkdir -p $(DESTDIR)/usr/bin
@@ -49,3 +49,22 @@ install:
 clean:
 	rm -f *.o *.so *.pyc *.a .depend *~
 	rm -f implantisomd5 checkisomd5 
+
+VERSION=$(shell awk '/Version:/ { print $$2 }' isomd5sum.spec)
+RELEASE=$(shell awk '/Release:/ { print $$2 }' isomd5sum.spec |sed -e 's/%{?dist}//')
+
+rpmlog:
+	@echo "* `date "+%a %b %d %Y"` `git-config user.name` <`git-config user.email`>"
+	@git-log --pretty="format:- %s (%ae)" $(VERSION)-$(RELEASE).. |sed -e 's/@.*)/)/'
+	@echo
+
+tag:
+	@git tag -a -m "Tag as $(VERSION)-$(RELEASE)" -f $(VERSION)-$(RELEASE)
+	@echo "Tagged as $(VERSION)-$(RELEASE)"
+
+archive:
+	@git-archive --format=tar --prefix=isomd5sum-$(VERSION)/ HEAD |bzip2 > isomd5sum-$(VERSION).tar.bz2
+	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
+
+src: tag create-archive
+	@rpmbuild -ts --nodeps booty-$(VERSION).tar.bz2

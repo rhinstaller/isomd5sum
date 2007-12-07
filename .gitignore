@@ -3,3 +3,5 @@ implantisomd5
 *.o
 *.so
 *~
+*.a
+*.tar.bz2
