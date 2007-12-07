@@ -175,7 +175,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
 /* returns -1 if no checksum encoded in media, 0 if no match, 1 if match */
 /* mediasum is the sum encoded in media, computedsum is one we compute   */
 /* both strings must be pre-allocated at least 33 chars in length        */
-static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) {
+static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallback cb, void *cbdata) {
     int nread;
     int i, j;
     int appdata_start_offset, appdata_end_offset;
@@ -184,7 +184,6 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) 
     int supported;
     int current_fragment = 0;
     int previous_fragment = 0;
-    int printed_frag_status = 0;
     unsigned int bufsize = 32768;
     unsigned char md5sum[16];
     unsigned char fragmd5sum[16];
@@ -195,13 +194,6 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) 
     char thisfragsum[FRAGMENT_SUM_LENGTH];
     long long fragmentcount = 0;
     MD5_CTX md5ctx, fragmd5ctx;
-    int quiet;
-    int gauge;
-    int gaugeat = -1;
-    int gaugeval;
-
-    quiet = (((flags & 1) == 1) ? 1 : 0); /* bit 1: quiet */
-    gauge = (((flags & 2) == 2) ? 1 : 0); /* bit 2: gauge */
 
     if ((pvd_offset = parsepvd(isofd, mediasum, &skipsectors, &isosize, &supported, fragmentsums, &fragmentcount)) < 0)
 	return -1;
@@ -217,10 +209,8 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) 
     apoff = pvd_offset + APPDATA_OFFSET;
 
     buf = malloc(bufsize * sizeof(unsigned char));
-    if (!quiet) {
-	printf("Percent complete: %05.1f%%", (100.0*offset)/(isosize-skipsectors*2048.0));
-	fflush(stdout);
-    }
+    if (cb)
+        cb(cbdata, 0, isosize - skipsectors*2048);
 
     while (offset < isosize - skipsectors*2048) {
 	nattempt = MIN(isosize - skipsectors*2048 - offset, bufsize);
@@ -271,45 +261,20 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) 
                     thisfragsum[i] = fragmentsums[j++];
                 }
                 thisfragsum[j] = '\0';
-                if (!quiet) {
-                    printf("   Fragment[%02i/%02lld] -> OK", previous_fragment+1, fragmentcount);
-                    printed_frag_status = 1;
-                    fflush(stdout);
-                }
                 previous_fragment = current_fragment;
                 /* Exit immediately if current fragment sum is incorrect */
                 if (strcmp(thisfragsum, computedsum) != 0) {
-                    if (!quiet) {
-                        printf("\nFragment %02i of %02lld is BAD!\n", previous_fragment+1, fragmentcount);
-                    }
-                    free(buf);
                     return 0;
                 }
             }
         }
 	offset = offset + nread;
-	
-	if (!quiet) {
-            if (printed_frag_status) {
-                printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-                printed_frag_status = 0;
-            }
-	    printf("\b\b\b\b\b\b%05.1f%%", (100.0*offset)/(isosize-skipsectors*2048.0));
-	    fflush(stdout);
-	}
-	if (gauge) {
-	    gaugeval = (100.0*offset)/(isosize-skipsectors*2048.0);
-	    if (gaugeval != gaugeat) {
-		printf("%d\n", gaugeval);
-		fflush(stdout);
-		gaugeat = gaugeval;
-	    }
-	}
+	if (cb)
+	    cb(cbdata, offset, isosize - skipsectors*2048);
     }
 
-    if (!quiet) {
-	printf("\b\b\b\b\b\b\n%05.1f\n", (100.0*offset)/(isosize-skipsectors*2048.0));
-    }
+    if (cb)
+        cb(cbdata, isosize, isosize - skipsectors*2048);
 
     sleep(1);
 
@@ -333,24 +298,7 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, int flags) 
 }
 
 
-#if 0
-static void readCB(void *co, long long pos) {
-    struct progressCBdata *data = co;
-    static int tick = 0;
-    char tickmark[2] = "-";
-    char * ticks = "-\\|/";
-
-    newtScaleSet(data->scale, pos);
-    tick++;
-    if (tick > 399) tick = 0;
-    *tickmark = ticks[tick / 100];
-
-    newtLabelSetText(data->label, tickmark);
-    newtRefresh();
-}
-#endif
-
-static int doMediaCheck(int isofd, char *mediasum, char *computedsum, long long *isosize, int *supported, int flags) {
+static int doMediaCheck(int isofd, char *mediasum, char *computedsum, long long *isosize, int *supported, checkCallback cb, void *cbdata) {
     int rc;
     int skipsectors;
     long long fragmentcount = 0;
@@ -364,21 +312,17 @@ static int doMediaCheck(int isofd, char *mediasum, char *computedsum, long long 
 	return -1;
     }
 
-    rc = checkmd5sum(isofd, mediasum, computedsum, flags);
+    rc = checkmd5sum(isofd, mediasum, computedsum, cb, cbdata);
 
     return rc;
 }
 
-int mediaCheckFile(char *file, int flags) {
+int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
     int isofd;
     int rc;
-    char *result;
     char mediasum[33], computedsum[33];
     long long isosize;
     int supported;
-    int quiet;
-
-    quiet = (((flags & 1) == 1) ? 1 : 0); /* bit 1: quiet */
 
     isofd = open(file, O_RDONLY);
 
@@ -387,26 +331,12 @@ int mediaCheckFile(char *file, int flags) {
 	return -1;
     }
 
-    rc = doMediaCheck(isofd, mediasum, computedsum, &isosize, &supported, flags);
+    rc = doMediaCheck(isofd, mediasum, computedsum, &isosize, &supported, cb, cbdata);
 
     close(isofd);
 
     /*    printf("isosize = %lld\n", isosize); 
 	  printf("%s\n%s\n", mediasum, computedsum);*/
-
-    /*    if (!quiet)
-          fprintf(stderr, "The supported flag value is %d\n", supported);*/
-
-    if (rc == 0)
-	result = "FAIL.\n\nIt is not recommended to use this media.";
-    else if (rc > 0)
-	result = "PASS.\n\nIt is OK to use this media.";
-    else
-	result = "NA.\n\nNo checksum information available, unable to verify media.";
-
-    if (!quiet)
-	fprintf(stderr, "The media check is complete, the "
-		"result is: %s\n", result);
 
     return rc;
 }
