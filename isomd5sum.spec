@@ -2,8 +2,8 @@
 
 Summary: Utilities for working with md5sum implanted in ISO images
 Name: isomd5sum
-Version: 1.0.1
-Release: 2
+Version: 1.0.2
+Release: 1
 Epoch: 1
 License: GPLv2+
 Group: Applications/System
@@ -53,8 +53,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 
 %changelog
-* Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.1-2
-- BR popt-devel
+* Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.2-1
+- The "fix the build after changing the API" release
 
 * Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.1-1
 - Add some simple callback support in the library
