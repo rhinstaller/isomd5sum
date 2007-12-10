@@ -39,7 +39,7 @@ static PyObject * doCheckIsoMD5Sum(PyObject * s, PyObject * args) {
     if (!PyArg_ParseTuple(args, "s", &isofile))
 	return NULL;
  
-    rc = mediaCheckFile(isofile, 1);
+    rc = mediaCheckFile(isofile, NULL, NULL);
 
     return Py_BuildValue("i", rc);
 }
