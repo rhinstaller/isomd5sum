@@ -3,14 +3,14 @@
 Summary: Utilities for working with md5sum implanted in ISO images
 Name: isomd5sum
 Version: 1.0.1
-Release: 1
+Release: 2
 Epoch: 1
 License: GPLv2+
 Group: Applications/System
 URL: http://git.fedoraproject.org
 Source0: %{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: python-devel
+BuildRequires: python-devel popt-devel
 
 %description
 The isomd5sum package contains utilities for implanting and verifying
@@ -53,6 +53,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 
 %changelog
+* Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.1-2
+- BR popt-devel
+
 * Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.1-1
 - Add some simple callback support in the library
 
