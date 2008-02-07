@@ -2,4 +2,13 @@ isomd5sum provides a way of making use of the ISO9660 application data
 area to store md5sum data about the iso.  This allows you to check the
 iso given nothing more than the iso itself.
 
-You can send questions, enhancements, etc to anaconda-devel-list@redhat.com
+isomd5sum is hosted as a fedorahosted project.  The source can be
+grabbed via git with
+  git clone git://git.fedorahosted.org/isomd5sum.git
+or browsed via gitweb at
+  http://git.fedorahosted.org/git/?p=isomd5sum.git;a=summary
+
+Releases of isomd5sum are located at
+  http://fedorahosted.org/releases/i/s/isomd5sum
+
+You can send questions, enhancements, etc to anaconda-devel-list@redhat.com.
