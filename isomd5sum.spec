@@ -7,8 +7,8 @@ Release: 1
 Epoch: 1
 License: GPLv2+
 Group: Applications/System
-URL: http://git.fedoraproject.org
-Source0: %{name}-%{version}.tar.bz2
+URL: http://git.fedorahosted.org/git/?p=isomd5sum.git;a=summary
+Source0: %http://fedorahosted.org/releases/i/s/isomd5sum/{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: python-devel popt-devel
 
