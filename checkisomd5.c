@@ -26,22 +26,17 @@
 #include "libcheckisomd5.h"
 
 struct progressCBData {
-    int quiet;
+    int verbose;
     int gauge;
     int gaugeat;
-    int printed_frag_status;
 };
 
 static void outputCB(void *co, long long offset, long long total) {
     struct progressCBData *data = co;
     int gaugeval = -1;
 
-    if (!data->quiet) {
-        if (data->printed_frag_status) {
-            printf("\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b");
-            data->printed_frag_status = 0;
-        }
-        printf("\b\b\b\b\b\b%05.1f%%", (100.0*offset)/(total));
+    if (data->verbose) {
+        printf("\rChecking: %05.1f%%", (100.0*offset)/(total));
         fflush(stdout);
     }
     if (data->gauge) {
@@ -52,15 +47,12 @@ static void outputCB(void *co, long long offset, long long total) {
             data->gaugeat = gaugeval;
         }
     }
-
-    data->printed_frag_status = 1;
 }
 
 int main(int argc, char **argv) {
     int i;
     int rc;
     struct progressCBData data;
-    int verbose;
     int md5only;
     int filearg;
     char * result;
@@ -79,7 +71,7 @@ int main(int argc, char **argv) {
 	    filearg++;
 	} else if (strcmp(argv[i], "--verbose") == 0) {
 	    filearg++;
-            verbose = 1;
+            data.verbose = 1;
 	} else if (strcmp(argv[i], "--gauge") == 0) {
 	    filearg++;
             data.gauge = 1;
@@ -87,13 +79,16 @@ int main(int argc, char **argv) {
 	    break;
     }
 
-    if (md5only|verbose)
+    if (md5only|data.verbose)
 	printMD5SUM(argv[filearg]);
 
     if (md5only)
 	exit(0);
 
     rc = mediaCheckFile(argv[filearg], outputCB, &data);
+
+    if (data.verbose)
+	printf("\n");
 
     if (rc == 0)
 	result = "FAIL.\n\nIt is not recommended to use this media.";
