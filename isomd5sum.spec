@@ -2,13 +2,13 @@
 
 Summary: Utilities for working with md5sum implanted in ISO images
 Name: isomd5sum
-Version: 1.0.2
+Version: 1.0.3
 Release: 1
 Epoch: 1
 License: GPLv2+
 Group: Applications/System
 URL: http://git.fedorahosted.org/git/?p=isomd5sum.git;a=summary
-Source0: %http://fedorahosted.org/releases/i/s/isomd5sum/{name}-%{version}.tar.bz2
+Source0: http://fedorahosted.org/releases/i/s/isomd5sum/%{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: python-devel popt-devel
 
@@ -54,6 +54,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 
 %changelog
+* Thu Feb  7 2008 Jeremy Katz <katzj@redhat.com> - 1:1.0.3-1
+- Add man pages from Ryan Finnie (ryan AT finnie DOT org)
+- Use popt in checkisomd5 (Ryan Finnie)
+- Fix verbose/gauge interactions (Ryan Finnie)
+- A few other little janitorial things (Ryan Finnie)
+
 * Mon Dec 10 2007 Jeremy Katz <katzj@redhat.com> - 1:1.0.2-1
 - The "fix the build after changing the API" release
 
