@@ -45,6 +45,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc COPYING
 /usr/bin/implantisomd5
 /usr/bin/checkisomd5
+%{_mandir}/man*/*
 %{python_sitearch}/pyisomd5sum.so
 
 %files devel
