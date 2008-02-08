@@ -2,7 +2,7 @@
 
 Summary: Utilities for working with md5sum implanted in ISO images
 Name: isomd5sum
-Version: 1.0.3
+Version: 1.0.4
 Release: 1
 Epoch: 1
 License: GPLv2+
@@ -54,7 +54,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.a
 
 %changelog
-* Thu Feb  7 2008 Jeremy Katz <katzj@redhat.com> - 1:1.0.3-1
+* Thu Feb  7 2008 Jeremy Katz <katzj@redhat.com> - 1:1.0.4-1
 - Add man pages from Ryan Finnie (ryan AT finnie DOT org)
 - Use popt in checkisomd5 (Ryan Finnie)
 - Fix verbose/gauge interactions (Ryan Finnie)
