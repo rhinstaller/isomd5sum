@@ -72,4 +72,4 @@ archive:
 	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
 
 src: tag create-archive
-	@rpmbuild -ts --nodeps booty-$(VERSION).tar.bz2
+	@rpmbuild -ts --nodeps isomd5sum-$(VERSION).tar.bz2
