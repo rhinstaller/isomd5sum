@@ -38,6 +38,7 @@ install: all
 	mkdir -p $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
 	mkdir -p $(DESTDIR)/usr/include
 	mkdir -p $(DESTDIR)/usr/bin
+	mkdir -p $(DESTDIR)/usr/share/man/man1
 	install -m 755 implantisomd5 $(DESTDIR)/usr/bin
 	install -m 755 checkisomd5 $(DESTDIR)/usr/bin
 	install -m 755 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
