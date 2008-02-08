@@ -34,22 +34,26 @@ libcheckisomd5.a: libcheckisomd5.a(libcheckisomd5.o md5.o)
 pyisomd5sum.so: $(PYOBJS)
 	$(CC) -shared -g -o pyisomd5sum.so -fpic $(PYOBJS) $(LDFLAGS)
 
-install: all
-	mkdir -p $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
-	mkdir -p $(DESTDIR)/usr/include
-	mkdir -p $(DESTDIR)/usr/bin
-	mkdir -p $(DESTDIR)/usr/share/man/man1
-	install -m 755 implantisomd5 $(DESTDIR)/usr/bin
-	install -m 755 checkisomd5 $(DESTDIR)/usr/bin
-	install -m 755 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
-	install -m 755 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
-	install -m 755 pyisomd5sum.so $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
-#	ln -s ../../bin/implantisomd5 $(DESTDIR)/usr/lib/anaconda-runtime/implantisomd5
-#	ln -s ../../bin/checkisomd5 $(DESTDIR)/usr/lib/anaconda-runtime/checkisomd5
-	install -m 644 libimplantisomd5.h $(DESTDIR)/usr/include/
-	install -m 644 libcheckisomd5.h $(DESTDIR)/usr/include/
-	install -m 644 libimplantisomd5.a $(DESTDIR)/usr/$(LIBDIR)
-	install -m 644 libcheckisomd5.a $(DESTDIR)/usr/$(LIBDIR)
+install: all install-bin install-python install-devel
+
+install-bin:
+	install -d -m 0755 $(DESTDIR)/usr/bin
+	install -d -m 0755 $(DESTDIR)/usr/share/man/man1
+	install -m 0755 implantisomd5 $(DESTDIR)/usr/bin
+	install -m 0755 checkisomd5 $(DESTDIR)/usr/bin
+	install -m 0755 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
+	install -m 0755 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
+
+install-python:
+	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
+	install -m 0755 pyisomd5sum.so $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
+
+install-devel:
+	install -d -m 0755 $(DESTDIR)/usr/include
+	install -m 0644 libimplantisomd5.h $(DESTDIR)/usr/include/
+	install -m 0644 libcheckisomd5.h $(DESTDIR)/usr/include/
+	install -m 0644 libimplantisomd5.a $(DESTDIR)/usr/$(LIBDIR)
+	install -m 0644 libcheckisomd5.a $(DESTDIR)/usr/$(LIBDIR)
 
 clean:
 	rm -f *.o *.so *.pyc *.a .depend *~
