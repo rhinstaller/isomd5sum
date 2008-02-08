@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <popt.h>
 
 #include "md5.h"
 #include "libcheckisomd5.h"
@@ -49,43 +50,58 @@ static void outputCB(void *co, long long offset, long long total) {
     }
 }
 
-int main(int argc, char **argv) {
-    int i;
-    int rc;
-    struct progressCBData data;
-    int md5only;
-    int filearg;
-    char * result;
+static void usage(void) {
+    fprintf(stderr, "Usage: checkisomd5 [--md5sumonly] [--verbose] [--gauge] <isofilename>|<blockdevice>\n\n");
+    exit(1);
+}
 
-    if (argc < 2) {
-	printf("Usage: checkisomd5 [--md5sumonly] [--verbose] [--gauge] <isofilename>|<blockdevice>\n\n");
+int main(int argc, char **argv) {
+    int rc;
+    const char **args;
+    int md5only;
+    int help;
+    struct progressCBData data;
+    char * result;
+    poptContext optCon;
+
+    memset(&data, 0, sizeof(struct progressCBData));
+
+    md5only = 0;
+    help = 0;
+    data.verbose = 0;
+    data.gauge = 0;
+
+    struct poptOption options[] = {
+	{ "md5sumonly", 'o', POPT_ARG_NONE, &md5only, 0 },
+	{ "verbose", 'v', POPT_ARG_NONE, &data.verbose, 0 },
+	{ "gauge", 'g', POPT_ARG_NONE, &data.gauge, 0},
+	{ "help", 'h', POPT_ARG_NONE, &help, 0},
+	{ 0, 0, 0, 0, 0}
+    };
+
+    optCon = poptGetContext("checkisomd5", argc, (const char **)argv, options, 0);
+
+    if ((rc = poptGetNextOpt(optCon)) < -1) {
+	fprintf(stderr, "bad option %s: %s\n",
+		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+		poptStrerror(rc));
 	exit(1);
     }
 
-    md5only = 0;
-    filearg = 1;
-    memset(&data, 0, sizeof(struct progressCBData));
-    for (i=1; i < argc; i++) {
-	if (strcmp(argv[i], "--md5sumonly") == 0) {
-	    md5only = 1;
-	    filearg++;
-	} else if (strcmp(argv[i], "--verbose") == 0) {
-	    filearg++;
-            data.verbose = 1;
-	} else if (strcmp(argv[i], "--gauge") == 0) {
-	    filearg++;
-            data.gauge = 1;
-	} else 
-	    break;
-    }
+    if (help)
+	usage();
+
+    args = poptGetArgs(optCon);
+    if (!args || !args[0] || !args[0][0])
+	usage();
 
     if (md5only|data.verbose)
-	printMD5SUM(argv[filearg]);
+	printMD5SUM((char *)args[0]);
 
     if (md5only)
 	exit(0);
 
-    rc = mediaCheckFile(argv[filearg], outputCB, &data);
+    rc = mediaCheckFile((char *)args[0], outputCB, &data);
 
     if (data.verbose)
 	printf("\n");
