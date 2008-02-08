@@ -1,0 +1,18 @@
+.TH "IMPLANTISOMD5" "1"
+.SH "NAME"
+implantisomd5 \(em implant an MD5 checksum in an ISO9660 image
+.SH "SYNOPSIS"
+.PP
+\fBimplantisomd5\fR [\fB\-\-force\fP]  [\fB\-\-supported-iso\fP]  [isofilename]
+.SH "DESCRIPTION"
+.PP
+This manual page documents briefly the \fBimplantisomd5\fR command. \fBimplantisomd5\fR is a program that embeds an MD5 checksum in an unused section of and ISO9660 (.iso) image.  This checksum can later be compared to the .iso, or a block device, using the corresponding \fBcheckisomd5\fR command.
+.SH "OPTIONS"
+.IP "\fB\-\-force\fP" 10
+Force an existing checksum to be overwritten.
+.IP "\fB\-\-supported-iso\fP" 10
+Indicate that the image will be written to a "supported" media, such as pressed CD.  On Red Hat-based Anaconda installers, this bypasses the prompt to check the CD.
+.SH "SEE ALSO"
+.PP
+checkisomd5 (1).
+.\" created by instant / docbook-to-man, Thu 07 Feb 2008, 12:11

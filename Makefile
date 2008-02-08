@@ -38,6 +38,8 @@ install: all
 	mkdir -p $(DESTDIR)/usr/bin
 	install -m 755 implantisomd5 $(DESTDIR)/usr/bin
 	install -m 755 checkisomd5 $(DESTDIR)/usr/bin
+	install -m 755 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
+	install -m 755 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
 	install -m 755 pyisomd5sum.so $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
 #	ln -s ../../bin/implantisomd5 $(DESTDIR)/usr/lib/anaconda-runtime/implantisomd5
 #	ln -s ../../bin/checkisomd5 $(DESTDIR)/usr/lib/anaconda-runtime/checkisomd5

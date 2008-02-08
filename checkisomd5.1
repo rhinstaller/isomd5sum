@@ -1,0 +1,22 @@
+.TH "CHECKISOMD5" "1"
+.SH "NAME"
+checkisomd5 \(em check an MD5 checksum implanted by \fBimplantisomd5\fR
+.SH "SYNOPSIS"
+.PP
+\fBcheckisomd5\fR [\fB\-\-md5sumonly\fP]  [\fB\-\-verbose\fP]  [\fB\-\-gauge\fP]  [isofilename  | blockdevice ]
+.SH "DESCRIPTION"
+.PP
+This manual page documents briefly the \fBcheckisomd5\fR command.  \fBcheckisomd5\fR is a program that checks an embedded MD5 checksum in a ISO9660 image (.iso), or block device.  The checksum is embedded by the corresponding \fBimplantisomd5\fR command.
+.PP
+Program returns exit status 0 if the checksum is correct, or 1 if the checksum is incorrect or non-existent.
+.SH "OPTIONS"
+.IP "\fB\-\-md5sumonly\fP" 10
+Do not check the target.  Instead, output human-readable information about the target's checksums.
+.IP "\fB\-\-verbose\fP" 10
+Display human-readable progress as the target is checked.  Without this option, nothing is outputted except errors.
+.IP "\fB\-\-gauge\fP" 10
+Display a series of numbers from 0 to 100, corresponding to check progress.  This output can be piped to \fBdialog \-\-gauge\fR for a user-friendly progress bar.
+.SH "SEE ALSO"
+.PP
+implantisomd5 (1).
+.\" created by instant / docbook-to-man, Thu 07 Feb 2008, 13:43
