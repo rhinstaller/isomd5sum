@@ -2,7 +2,7 @@ PYVER  := $(shell python -c 'import sys; print sys.version[0:3]')
 PYTHON = python$(PYVER)
 PYTHONINCLUDE = /usr/include/$(PYTHON)
 
-ifneq (,$(filter ppc64 x86_64 s390x,$(shell uname -m)))
+ifneq (,$(filter sparc64 ppc64 x86_64 s390x,$(shell uname -m)))
 LIBDIR = lib64
 else
 LIBDIR = lib
