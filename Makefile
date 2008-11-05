@@ -41,8 +41,8 @@ install-bin:
 	install -d -m 0755 $(DESTDIR)/usr/share/man/man1
 	install -m 0755 implantisomd5 $(DESTDIR)/usr/bin
 	install -m 0755 checkisomd5 $(DESTDIR)/usr/bin
-	install -m 0755 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
-	install -m 0755 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
+	install -m 0644 implantisomd5.1 $(DESTDIR)/usr/share/man/man1
+	install -m 0644 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
 
 install-python:
 	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
