@@ -2,6 +2,8 @@ PYVER  := $(shell python -c 'import sys; print sys.version[0:3]')
 PYTHON = python$(PYVER)
 PYTHONINCLUDE = /usr/include/$(PYTHON)
 
+VERSION=1.0.5
+
 ifneq (,$(filter sparc64 ppc64 x86_64 s390x,$(shell uname -m)))
 LIBDIR = lib64
 else
@@ -50,6 +52,7 @@ install-python:
 
 install-devel:
 	install -d -m 0755 $(DESTDIR)/usr/include
+	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)
 	install -m 0644 libimplantisomd5.h $(DESTDIR)/usr/include/
 	install -m 0644 libcheckisomd5.h $(DESTDIR)/usr/include/
 	install -m 0644 libimplantisomd5.a $(DESTDIR)/usr/$(LIBDIR)
@@ -59,21 +62,10 @@ clean:
 	rm -f *.o *.so *.pyc *.a .depend *~
 	rm -f implantisomd5 checkisomd5 
 
-VERSION=$(shell awk '/Version:/ { print $$2 }' isomd5sum.spec)
-RELEASE=$(shell awk '/Release:/ { print $$2 }' isomd5sum.spec |sed -e 's/%{?dist}//')
-
-rpmlog:
-	@echo "* `date "+%a %b %d %Y"` `git-config user.name` <`git-config user.email`>"
-	@git-log --pretty="format:- %s (%ae)" $(VERSION)-$(RELEASE).. |sed -e 's/@.*)/)/'
-	@echo
-
 tag:
-	@git tag -a -m "Tag as $(VERSION)-$(RELEASE)" -f $(VERSION)-$(RELEASE)
-	@echo "Tagged as $(VERSION)-$(RELEASE)"
+	@git tag -a -m "Tag as $(VERSION)" -f $(VERSION)
+	@echo "Tagged as $(VERSION)"
 
 archive:
-	@git-archive --format=tar --prefix=isomd5sum-$(VERSION)/ HEAD |bzip2 > isomd5sum-$(VERSION).tar.bz2
+	@git archive --format=tar --prefix=isomd5sum-$(VERSION)/ HEAD |bzip2 > isomd5sum-$(VERSION).tar.bz2
 	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
-
-src: tag create-archive
-	@rpmbuild -ts --nodeps isomd5sum-$(VERSION).tar.bz2
