@@ -32,7 +32,23 @@ struct progressCBData {
     int gaugeat;
 };
 
-static void outputCB(void *co, long long offset, long long total) {
+int user_bailing_out() {
+  int retval = 0;
+  struct timeval timev;
+  fd_set rfds;
+
+  FD_ZERO(&rfds);
+  FD_SET(0,&rfds);
+
+  timev.tv_sec = 0;
+  timev.tv_usec = 0;
+
+  retval = select(1, &rfds, NULL, NULL, &timev);
+
+  return retval;
+}
+
+static int outputCB(void *co, long long offset, long long total) {
     struct progressCBData *data = co;
     int gaugeval = -1;
 
@@ -48,6 +64,8 @@ static void outputCB(void *co, long long offset, long long total) {
             data->gaugeat = gaugeval;
         }
     }
+
+    return user_bailing_out();
 }
 
 static void usage(void) {
@@ -101,6 +119,8 @@ int main(int argc, char **argv) {
     if (md5only)
 	exit(0);
 
+    printf("Press [ENTER] to abort check.\n");
+
     rc = mediaCheckFile((char *)args[0], outputCB, &data);
 
     if (data.verbose)
@@ -108,6 +128,8 @@ int main(int argc, char **argv) {
 
     if (rc == 0)
 	result = "FAIL.\n\nIt is not recommended to use this media.";
+    else if (rc == 2)
+      result = "UNKNOWN.\n\nThe media check was aborted.";
     else if (rc > 0)
 	result = "PASS.\n\nIt is OK to use this media.";
     else
