@@ -270,7 +270,7 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
         }
 	offset = offset + nread;
 	if (cb)
-	    cb(cbdata, offset, isosize - skipsectors*2048);
+          if(cb(cbdata, offset, isosize - skipsectors*2048)) return 2;
     }
 
     if (cb)
