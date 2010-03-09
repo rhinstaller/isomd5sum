@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <popt.h>
+#include <termios.h>
 
 #include "md5.h"
 #include "libcheckisomd5.h"
@@ -36,6 +37,7 @@ int user_bailing_out() {
   int retval = 0;
   struct timeval timev;
   fd_set rfds;
+  char ch;
 
   FD_ZERO(&rfds);
   FD_SET(0,&rfds);
@@ -43,7 +45,9 @@ int user_bailing_out() {
   timev.tv_sec = 0;
   timev.tv_usec = 0;
 
-  retval = select(1, &rfds, NULL, NULL, &timev);
+  if (select(1, &rfds, NULL, NULL, &timev))
+    if ((ch = getchar()) == 27)
+      retval = 1;
 
   return retval;
 }
@@ -97,6 +101,8 @@ int main(int argc, char **argv) {
 	{ 0, 0, 0, 0, 0}
     };
 
+    static struct termios oldt, newt;
+
     optCon = poptGetContext("checkisomd5", argc, (const char **)argv, options, 0);
 
     if ((rc = poptGetNextOpt(optCon)) < -1) {
@@ -119,9 +125,14 @@ int main(int argc, char **argv) {
     if (md5only)
 	exit(0);
 
-    printf("Press [ENTER] to abort check.\n");
+    printf("Press [Esc] to abort check.\n");
 
+    tcgetattr(0, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO | ECHONL | ISIG | IEXTEN);
+    tcsetattr(0, TCSANOW, &newt);
     rc = mediaCheckFile((char *)args[0], outputCB, &data);
+    tcsetattr(0, TCSANOW, &oldt);
 
     if (data.verbose)
 	printf("\n");
