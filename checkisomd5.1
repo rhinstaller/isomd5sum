@@ -8,7 +8,9 @@ checkisomd5 \(em check an MD5 checksum implanted by \fBimplantisomd5\fR
 .PP
 This manual page documents briefly the \fBcheckisomd5\fR command.  \fBcheckisomd5\fR is a program that checks an embedded MD5 checksum in a ISO9660 image (.iso), or block device.  The checksum is embedded by the corresponding \fBimplantisomd5\fR command.
 .PP
-Program returns exit status 0 if the checksum is correct, or 1 if the checksum is incorrect or non-existent.
+The check can be aborted by pressing ENTER key.
+.PP
+Program returns exit status 0 if the checksum is correct, or 1 if the checksum is incorrect, non-existent, or check was aborted.
 .SH "OPTIONS"
 .IP "\fB\-\-md5sumonly\fP" 10
 Do not check the target.  Instead, output human-readable information about the target's checksums.
