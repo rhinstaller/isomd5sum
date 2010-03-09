@@ -172,7 +172,6 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
     return offset;
 }
 
-/* returns -1 if no checksum encoded in media, 0 if no match, 1 if match */
 /* mediasum is the sum encoded in media, computedsum is one we compute   */
 /* both strings must be pre-allocated at least 33 chars in length        */
 static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallback cb, void *cbdata) {
@@ -196,7 +195,7 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
     MD5_CTX md5ctx, fragmd5ctx;
 
     if ((pvd_offset = parsepvd(isofd, mediasum, &skipsectors, &isosize, &supported, fragmentsums, &fragmentcount)) < 0)
-	return -1;
+	return ISOMD5SUM_CHECK_NOT_FOUND;
 
     /*    printf("Mediasum = %s\n",mediasum); */
 
@@ -264,13 +263,13 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
                 previous_fragment = current_fragment;
                 /* Exit immediately if current fragment sum is incorrect */
                 if (strcmp(thisfragsum, computedsum) != 0) {
-                    return 0;
+                    return ISOMD5SUM_CHECK_FAILED;
                 }
             }
         }
 	offset = offset + nread;
 	if (cb)
-          if(cb(cbdata, offset, isosize - skipsectors*2048)) return 2;
+          if(cb(cbdata, offset, isosize - skipsectors*2048)) return ISOMD5SUM_CHECK_ABORTED;
     }
 
     if (cb)
@@ -292,9 +291,9 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
     /*    printf("mediasum, computedsum = %s %s\n", mediasum, computedsum); */
 
     if (strcmp(mediasum, computedsum))
-	return 0;
+	return ISOMD5SUM_CHECK_FAILED;
     else
-	return 1;
+	return ISOMD5SUM_CHECK_PASSED;
 }
 
 
@@ -309,7 +308,7 @@ static int doMediaCheck(int isofd, char *mediasum, char *computedsum, long long 
 			 "primary volume descriptor.\nThis probably "
 			 "means the disc was created without adding the "
 			 "checksum.");
-	return -1;
+	return ISOMD5SUM_CHECK_NOT_FOUND;
     }
 
     rc = checkmd5sum(isofd, mediasum, computedsum, cb, cbdata);
@@ -328,7 +327,7 @@ int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
 
     if (isofd < 0) {
 	fprintf(stderr, "Unable to find install image %s\n", file);
-	return -1;
+	return ISOMD5SUM_CHECK_NOT_FOUND;
     }
 
     rc = doMediaCheck(isofd, mediasum, computedsum, &isosize, &supported, cb, cbdata);
