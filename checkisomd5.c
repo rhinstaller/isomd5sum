@@ -146,6 +146,6 @@ int main(int argc, char **argv) {
 
     fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
 
-    exit (rc == ISOMD5SUM_CHECK_FAILED);
+    exit (rc != ISOMD5SUM_CHECK_PASSED);
 }
  
