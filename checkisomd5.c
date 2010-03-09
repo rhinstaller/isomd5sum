@@ -126,17 +126,26 @@ int main(int argc, char **argv) {
     if (data.verbose)
 	printf("\n");
 
-    if (rc == 0)
-	result = "FAIL.\n\nIt is not recommended to use this media.";
-    else if (rc == 2)
-      result = "UNKNOWN.\n\nThe media check was aborted.";
-    else if (rc > 0)
-	result = "PASS.\n\nIt is OK to use this media.";
-    else
-	result = "NA.\n\nNo checksum information available, unable to verify media.";
+    switch (rc) {
+	case ISOMD5SUM_CHECK_FAILED:
+		result = "FAIL.\n\nIt is not recommended to use this media.";
+		break;
+	case ISOMD5SUM_CHECK_ABORTED:
+		result = "UNKNOWN.\n\nThe media check was aborted.";
+		break;
+	case ISOMD5SUM_CHECK_NOT_FOUND:
+		result = "NA.\n\nNo checksum information available, unable to verify media.";
+		break;
+	case ISOMD5SUM_CHECK_PASSED:
+		result = "PASS.\n\nIt is OK to use this media.";
+		break;
+	default:
+		result = "checkisomd5 ERROR - bad return value";
+		break;
+    }
 
     fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
 
-    exit (rc == 0);
+    exit (rc == ISOMD5SUM_CHECK_FAILED);
 }
  
