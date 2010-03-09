@@ -6,6 +6,7 @@
 #define ISOMD5SUM_CHECK_ABORTED         2
 #define ISOMD5SUM_CHECK_NOT_FOUND       -1
 
+/* for non-zero return value, check is aborted */
 typedef int (*checkCallback)(void *, long long offset, long long total);
 
 int mediaCheckFile(char *iso, checkCallback cb, void *cbdata);
