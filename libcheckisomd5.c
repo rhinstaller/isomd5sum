@@ -221,7 +221,6 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
 	    break;
 
         if (nread > nattempt) {
-            fprintf(stderr, "Warning: read got more data than requested\n");
             nread = nattempt;
             lseek(isofd, offset+nread, SEEK_SET);
         }
@@ -304,10 +303,6 @@ static int doMediaCheck(int isofd, char *mediasum, char *computedsum, long long 
     char fragmentsums[FRAGMENT_SUM_LENGTH+1];
 
     if (parsepvd(isofd, mediasum, &skipsectors, isosize, supported, fragmentsums, &fragmentcount) < 0) {
-	fprintf(stderr, "Unable to read the disc checksum from the "
-			 "primary volume descriptor.\nThis probably "
-			 "means the disc was created without adding the "
-			 "checksum.");
 	return ISOMD5SUM_CHECK_NOT_FOUND;
     }
 
@@ -326,7 +321,6 @@ int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
     isofd = open(file, O_RDONLY);
 
     if (isofd < 0) {
-	fprintf(stderr, "Unable to find install image %s\n", file);
 	return ISOMD5SUM_CHECK_NOT_FOUND;
     }
 
