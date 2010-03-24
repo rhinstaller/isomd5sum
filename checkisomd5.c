@@ -77,13 +77,45 @@ static void usage(void) {
     exit(1);
 }
 
+
+/* Process the result code and return the proper exit status value
+ */
+int processExitStatus(int rc) {
+    char * result;
+
+    switch (rc) {
+	case ISOMD5SUM_CHECK_FAILED:
+		result = "FAIL.\n\nIt is not recommended to use this media.";
+		break;
+	case ISOMD5SUM_CHECK_ABORTED:
+		result = "UNKNOWN.\n\nThe media check was aborted.";
+		break;
+	case ISOMD5SUM_CHECK_NOT_FOUND:
+		result = "NA.\n\nNo checksum information available, unable to verify media.";
+		break;
+        case ISOMD5SUM_FILE_NOT_FOUND:
+                result = "NA.\n\nFile not found.";
+                break;
+	case ISOMD5SUM_CHECK_PASSED:
+		result = "PASS.\n\nIt is OK to use this media.";
+		break;
+	default:
+		result = "checkisomd5 ERROR - bad return value";
+		break;
+    }
+
+    fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
+
+    return(rc != ISOMD5SUM_CHECK_PASSED);
+}
+
+
 int main(int argc, char **argv) {
     int rc;
     const char **args;
     int md5only;
     int help;
     struct progressCBData data;
-    char * result;
     poptContext optCon;
 
     memset(&data, 0, sizeof(struct progressCBData));
@@ -119,8 +151,12 @@ int main(int argc, char **argv) {
     if (!args || !args[0] || !args[0][0])
 	usage();
 
-    if (md5only|data.verbose)
-	printMD5SUM((char *)args[0]);
+    if (md5only|data.verbose) {
+	rc = printMD5SUM((char *)args[0]);
+        if (rc < 0) {
+            exit(processExitStatus(rc));
+        }
+    }
 
     if (md5only)
 	exit(0);
@@ -137,26 +173,6 @@ int main(int argc, char **argv) {
     if (data.verbose)
 	printf("\n");
 
-    switch (rc) {
-	case ISOMD5SUM_CHECK_FAILED:
-		result = "FAIL.\n\nIt is not recommended to use this media.";
-		break;
-	case ISOMD5SUM_CHECK_ABORTED:
-		result = "UNKNOWN.\n\nThe media check was aborted.";
-		break;
-	case ISOMD5SUM_CHECK_NOT_FOUND:
-		result = "NA.\n\nNo checksum information available, unable to verify media.";
-		break;
-	case ISOMD5SUM_CHECK_PASSED:
-		result = "PASS.\n\nIt is OK to use this media.";
-		break;
-	default:
-		result = "checkisomd5 ERROR - bad return value";
-		break;
-    }
-
-    fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
-
-    exit (rc != ISOMD5SUM_CHECK_PASSED);
+    exit(processExitStatus(rc));
 }
  

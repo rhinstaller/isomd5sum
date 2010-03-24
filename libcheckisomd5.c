@@ -321,7 +321,7 @@ int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
     isofd = open(file, O_RDONLY);
 
     if (isofd < 0) {
-	return ISOMD5SUM_CHECK_NOT_FOUND;
+	return ISOMD5SUM_FILE_NOT_FOUND;
     }
 
     rc = doMediaCheck(isofd, mediasum, computedsum, &isosize, &supported, cb, cbdata);
@@ -334,7 +334,7 @@ int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
     return rc;
 }
 
-void printMD5SUM(char *file) {
+int printMD5SUM(char *file) {
     int isofd;
     char mediasum[64];
     long long isosize;
@@ -346,17 +346,11 @@ void printMD5SUM(char *file) {
     isofd = open(file, O_RDONLY);
 
     if (isofd < 0) {
-	fprintf(stderr, "%s: Unable to find install image.\n", file);
-	exit(1);
+        return ISOMD5SUM_FILE_NOT_FOUND;
     }
 
     if (parsepvd(isofd, mediasum, &skipsectors, &isosize, &supported, fragmentsums, &fragmentcount) < 0) {
-	fprintf(stderr, "%s: Could not get pvd data", file);
-	fprintf(stderr, "\nUnable to read the disc checksum from the "
-			 "primary volume descriptor.\nThis probably "
-			 "means the disc was created without adding the "
-			 "checksum.");
-	exit(1);
+        return ISOMD5SUM_CHECK_NOT_FOUND;
     }
 
     close(isofd);
@@ -366,4 +360,6 @@ void printMD5SUM(char *file) {
         printf("Fragment sums: %s\n", fragmentsums);
         printf("Fragment count: %lld\n", fragmentcount); 
     }
+
+    return 0;
 }
