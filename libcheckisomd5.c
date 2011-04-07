@@ -189,8 +189,8 @@ static int checkmd5sum(int isofd, char *mediasum, char *computedsum, checkCallba
     unsigned int len;
     unsigned char *buf;
     long long isosize, offset, pvd_offset, apoff;
-    char fragmentsums[FRAGMENT_SUM_LENGTH];
-    char thisfragsum[FRAGMENT_SUM_LENGTH];
+    char fragmentsums[FRAGMENT_SUM_LENGTH+1];
+    char thisfragsum[FRAGMENT_SUM_LENGTH+1];
     long long fragmentcount = 0;
     MD5_CTX md5ctx, fragmd5ctx;
 
