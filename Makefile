@@ -24,10 +24,10 @@ all: implantisomd5 checkisomd5 pyisomd5sum.so libimplantisomd5.a libcheckisomd5.
 	$(CC) -c -O $(CFLAGS) -o $@ $<
 
 implantisomd5: implantisomd5.o libimplantisomd5.a
-	$(CC) -lpopt $(CFLAGS) implantisomd5.o libimplantisomd5.a -o implantisomd5
+	$(CC) $(CFLAGS) implantisomd5.o libimplantisomd5.a -lpopt -o implantisomd5
 
 checkisomd5: checkisomd5.o libcheckisomd5.a
-	$(CC) -lpopt $(CFLAGS) checkisomd5.o libcheckisomd5.a -o checkisomd5
+	$(CC) $(CFLAGS) checkisomd5.o libcheckisomd5.a -lpopt -o checkisomd5
 
 libimplantisomd5.a: libimplantisomd5.a(libimplantisomd5.o md5.o)
 
