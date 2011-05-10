@@ -4,7 +4,7 @@ import os
 import pyisomd5sum
 
 # create iso file
-os.system("mkisofs -quiet . > testiso.iso")
+os.system("genisoimage -quiet . > testiso.iso")
 
 # implant it
 print "Implanting -> ", pyisomd5sum.implantisomd5sum("testiso.iso", 1, 0)
