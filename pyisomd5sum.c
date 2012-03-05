@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2001-2007 Red Hat, Inc.
+ * Copyright (C) 2001-2012 Red Hat, Inc.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,15 +31,44 @@ static PyMethodDef isomd5sumMethods[] = {
     { NULL }
 } ;
 
+/* Call python object with offset and total
+ * If the object returns true return 1 to abort the check
+ */
+int pythonCB(void *cbdata, long long offset, long long total) {
+    PyObject *arglist, *result;
+    int rc;
+
+    arglist = Py_BuildValue("(LL)", offset, total);
+    result = PyObject_CallObject(cbdata, arglist);
+    Py_DECREF(arglist);
+
+    if (result == NULL)
+       return 1;
+
+    rc = PyObject_IsTrue(result);
+    Py_DECREF(result);
+    return (rc > 0);
+}
 
 static PyObject * doCheckIsoMD5Sum(PyObject * s, PyObject * args) {
+    PyObject *callback = NULL;
     char *isofile;
     int rc;
 
-    if (!PyArg_ParseTuple(args, "s", &isofile))
-	return NULL;
- 
-    rc = mediaCheckFile(isofile, NULL, NULL);
+    if (!PyArg_ParseTuple(args, "s|O", &isofile, &callback))
+        return NULL;
+
+    if (callback) {
+        if (!PyCallable_Check(callback)) {
+            PyErr_SetString(PyExc_TypeError, "parameter must be callable");
+            return NULL;
+        }
+
+        rc = mediaCheckFile(isofile, pythonCB, callback);
+        Py_DECREF(callback);
+    } else {
+        rc = mediaCheckFile(isofile, NULL, NULL);
+    }
 
     return Py_BuildValue("i", rc);
 }
@@ -50,7 +79,7 @@ static PyObject * doImplantIsoMD5Sum(PyObject * s, PyObject * args) {
     int rc;
 
     if (!PyArg_ParseTuple(args, "sii", &isofile, &supported, &forceit))
-	return NULL;
+        return NULL;
 
     rc = implantISOFile(isofile, supported, forceit, 1, &errstr);
 
