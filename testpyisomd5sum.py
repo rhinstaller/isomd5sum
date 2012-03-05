@@ -18,5 +18,20 @@ print "Implanting again forcing -> ", pyisomd5sum.implantisomd5sum("testiso.iso"
 # check it
 print "Checking -> ",pyisomd5sum.checkisomd5sum("testiso.iso")
 
+def callback(offset, total):
+    print "%s - %s" % (offset, total)
+
+print "Run with callback"
+pyisomd5sum.checkisomd5sum("testiso.iso", callback)
+
+def callback_abort(offset, total):
+    print "%s - %s" % (offset, total)
+    if offset > 500000:
+        return True
+    return False
+
+print "Run with callback and abort after offset of 500000"
+pyisomd5sum.checkisomd5sum("testiso.iso", callback_abort)
+
 # clean up
 os.unlink("testiso.iso")
