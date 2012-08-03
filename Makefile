@@ -21,20 +21,20 @@ PYOBJS = pyisomd5sum.o libcheckisomd5.a libimplantisomd5.a
 all: implantisomd5 checkisomd5 pyisomd5sum.so libimplantisomd5.a libcheckisomd5.a
 
 %.o: %.c
-	$(CC) -c -O $(CFLAGS) -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -O -o $@ $<
 
 implantisomd5: implantisomd5.o libimplantisomd5.a
-	$(CC) $(CFLAGS) implantisomd5.o libimplantisomd5.a -lpopt -o implantisomd5
+	$(CC) $(CPPFLAGS) $(CFLAGS) implantisomd5.o libimplantisomd5.a -lpopt $(LDFLAGS) -o implantisomd5
 
 checkisomd5: checkisomd5.o libcheckisomd5.a
-	$(CC) $(CFLAGS) checkisomd5.o libcheckisomd5.a -lpopt -o checkisomd5
+	$(CC) $(CPPFLAGS) $(CFLAGS) checkisomd5.o libcheckisomd5.a -lpopt $(LDFLAGS) -o checkisomd5
 
 libimplantisomd5.a: libimplantisomd5.a(libimplantisomd5.o md5.o)
 
 libcheckisomd5.a: libcheckisomd5.a(libcheckisomd5.o md5.o)
 
 pyisomd5sum.so: $(PYOBJS)
-	$(CC) -shared -g -o pyisomd5sum.so -fpic $(PYOBJS) $(LDFLAGS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) -shared -g -fpic $(PYOBJS) $(LDFLAGS) -o pyisomd5sum.so
 
 install: all install-bin install-python install-devel
 
