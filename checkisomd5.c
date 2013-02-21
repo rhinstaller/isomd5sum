@@ -79,34 +79,43 @@ static void usage(void) {
 
 
 /* Process the result code and return the proper exit status value
+ *
+ * return 1 for failures, 0 for good checksum and 2 if aborted.
  */
 int processExitStatus(int rc) {
     char * result;
+    int exit_rc;
 
     switch (rc) {
         case ISOMD5SUM_CHECK_FAILED:
             result = "FAIL.\n\nIt is not recommended to use this media.";
+            exit_rc = 1;
             break;
         case ISOMD5SUM_CHECK_ABORTED:
             result = "UNKNOWN.\n\nThe media check was aborted.";
+            exit_rc = 2;
             break;
         case ISOMD5SUM_CHECK_NOT_FOUND:
             result = "NA.\n\nNo checksum information available, unable to verify media.";
+            exit_rc = 1;
             break;
         case ISOMD5SUM_FILE_NOT_FOUND:
             result = "NA.\n\nFile not found.";
+            exit_rc = 1;
             break;
         case ISOMD5SUM_CHECK_PASSED:
             result = "PASS.\n\nIt is OK to use this media.";
+            exit_rc = 0;
             break;
         default:
             result = "checkisomd5 ERROR - bad return value";
+            exit_rc = 1;
             break;
     }
 
     fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
 
-    return(rc != ISOMD5SUM_CHECK_PASSED);
+    return(exit_rc);
 }
 
 
