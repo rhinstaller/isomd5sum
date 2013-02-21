@@ -1,6 +1,6 @@
 /*
  * checkosmd5 - simple program to check implanted md5sum
- * Copyright (C) 2001-2007 Red Hat, Inc.
+ * Copyright (C) 2001-2013 Red Hat, Inc.
  * Michael Fulbright <msf@redhat.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -84,24 +84,24 @@ int processExitStatus(int rc) {
     char * result;
 
     switch (rc) {
-	case ISOMD5SUM_CHECK_FAILED:
-		result = "FAIL.\n\nIt is not recommended to use this media.";
-		break;
-	case ISOMD5SUM_CHECK_ABORTED:
-		result = "UNKNOWN.\n\nThe media check was aborted.";
-		break;
-	case ISOMD5SUM_CHECK_NOT_FOUND:
-		result = "NA.\n\nNo checksum information available, unable to verify media.";
-		break;
+        case ISOMD5SUM_CHECK_FAILED:
+            result = "FAIL.\n\nIt is not recommended to use this media.";
+            break;
+        case ISOMD5SUM_CHECK_ABORTED:
+            result = "UNKNOWN.\n\nThe media check was aborted.";
+            break;
+        case ISOMD5SUM_CHECK_NOT_FOUND:
+            result = "NA.\n\nNo checksum information available, unable to verify media.";
+            break;
         case ISOMD5SUM_FILE_NOT_FOUND:
-                result = "NA.\n\nFile not found.";
-                break;
-	case ISOMD5SUM_CHECK_PASSED:
-		result = "PASS.\n\nIt is OK to use this media.";
-		break;
-	default:
-		result = "checkisomd5 ERROR - bad return value";
-		break;
+            result = "NA.\n\nFile not found.";
+            break;
+        case ISOMD5SUM_CHECK_PASSED:
+            result = "PASS.\n\nIt is OK to use this media.";
+            break;
+        default:
+            result = "checkisomd5 ERROR - bad return value";
+            break;
     }
 
     fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
@@ -126,11 +126,11 @@ int main(int argc, char **argv) {
     data.gauge = 0;
 
     struct poptOption options[] = {
-	{ "md5sumonly", 'o', POPT_ARG_NONE, &md5only, 0 },
-	{ "verbose", 'v', POPT_ARG_NONE, &data.verbose, 0 },
-	{ "gauge", 'g', POPT_ARG_NONE, &data.gauge, 0},
-	{ "help", 'h', POPT_ARG_NONE, &help, 0},
-	{ 0, 0, 0, 0, 0}
+        { "md5sumonly", 'o', POPT_ARG_NONE, &md5only, 0 },
+        { "verbose", 'v', POPT_ARG_NONE, &data.verbose, 0 },
+        { "gauge", 'g', POPT_ARG_NONE, &data.gauge, 0},
+        { "help", 'h', POPT_ARG_NONE, &help, 0},
+        { 0, 0, 0, 0, 0}
     };
 
     static struct termios oldt, newt;
@@ -138,28 +138,28 @@ int main(int argc, char **argv) {
     optCon = poptGetContext("checkisomd5", argc, (const char **)argv, options, 0);
 
     if ((rc = poptGetNextOpt(optCon)) < -1) {
-	fprintf(stderr, "bad option %s: %s\n",
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
-		poptStrerror(rc));
-	exit(1);
+        fprintf(stderr, "bad option %s: %s\n",
+                poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+                poptStrerror(rc));
+        exit(1);
     }
 
     if (help)
-	usage();
+        usage();
 
     args = poptGetArgs(optCon);
     if (!args || !args[0] || !args[0][0])
-	usage();
+        usage();
 
     if (md5only|data.verbose) {
-	rc = printMD5SUM((char *)args[0]);
+        rc = printMD5SUM((char *)args[0]);
         if (rc < 0) {
             exit(processExitStatus(rc));
         }
     }
 
     if (md5only)
-	exit(0);
+        exit(0);
 
     printf("Press [Esc] to abort check.\n");
 
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
     tcsetattr(0, TCSANOW, &oldt);
 
     if (data.verbose)
-	printf("\n");
+        printf("\n");
 
     exit(processExitStatus(rc));
 }
