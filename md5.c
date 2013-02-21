@@ -151,13 +151,12 @@ void MD5_Final(unsigned char digest[16], struct MD5Context *ctx)
         if (ctx->doByteReverse) byteReverse(ctx->in, 14);
 
         /* Append length in bits and transform */
-        ((uint32 *) ctx->in)[14] = ctx->bits[0];
-        ((uint32 *) ctx->in)[15] = ctx->bits[1];
+        memcpy(ctx->in+56, ctx->bits, sizeof(ctx->bits));
 
         MD5_Transform(ctx->buf, (uint32 *) ctx->in);
         if (ctx->doByteReverse) byteReverse((unsigned char *) ctx->buf, 4);
         memcpy(digest, ctx->buf, 16);
-        memset(ctx, 0, sizeof(ctx));    /* In case it's sensitive */
+        memset(ctx, 0, sizeof(*ctx));    /* In case it's sensitive */
 }
 
 #ifndef ASM_MD5
