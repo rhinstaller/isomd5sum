@@ -1,10 +1,10 @@
 /*
- * Copyright (C) 2001-2007 Red Hat, Inc.
+ * Copyright (C) 2001-2013 Red Hat, Inc.
  *
  * Michael Fulbright <msf@redhat.com>
  * Dustin Kirkland  <dustin.dirkland@gmail.com>
- *	Added support for checkpoint fragment sums;                
- *	Exits media check as soon as bad fragment md5sum'ed        
+ *      Added support for checkpoint fragment sums;
+ *      Exits media check as soon as bad fragment md5sum'ed
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -55,39 +55,39 @@ static int parsepvd(int isofd, char *mediasum, long long *isosize) {
     unsigned char *p __attribute__((unused));
 
     if (lseek(isofd, 16*2048, SEEK_SET) == -1)
-	return ((long long)-1);
-    
+        return ((long long)-1);
+
     offset = (16 * 2048);
     for (;1;) {
         if (read(isofd, buf, 2048L) == -1)
-	    return ((long long)-1);
+            return ((long long)-1);
 
-	if (buf[0] == 1)
-	    /* found primary volume descriptor */
-	    break;
-	else if (buf[0] == 255)
-	    /* hit end and didn't find primary volume descriptor */
-	    return ((long long)-1);
-	offset += 2048L;
+        if (buf[0] == 1)
+            /* found primary volume descriptor */
+            break;
+        else if (buf[0] == 255)
+            /* hit end and didn't find primary volume descriptor */
+            return ((long long)-1);
+        offset += 2048L;
     }
-    
+
     /* read out md5sum */
 #if 0
     memcpy(mediasum, buf + APPDATA_OFFSET + 13, 32);
     mediasum[32] = '\0';
 
     for (p=mediasum; *p; p++)
-	if (*p != ' ')
-	    break;
+        if (*p != ' ')
+            break;
 
     /* if the md5sum was all spaces, we didn't find md5sum */
     if (!*p)
-	return -1;
+        return -1;
 #endif
 
     /* get isosize */
     *isosize = (buf[SIZE_OFFSET]*0x1000000+buf[SIZE_OFFSET+1]*0x10000 +
-		buf[SIZE_OFFSET+2]*0x100 + buf[SIZE_OFFSET+3]) * 2048LL;
+                buf[SIZE_OFFSET+2]*0x100 + buf[SIZE_OFFSET+3]) * 2048LL;
 
     return offset;
 }
@@ -95,8 +95,8 @@ static int parsepvd(int isofd, char *mediasum, long long *isosize) {
 
 static unsigned int writeAppData(unsigned char *appdata, char *valstr, unsigned int loc) {
     if (loc + strlen(valstr) > 511) {
-	printf("Attempted to write too much appdata, exiting...\n");
-	exit(-1);
+        printf("Attempted to write too much appdata, exiting...\n");
+        exit(-1);
     }
 
     memcpy(appdata + loc, valstr, strlen(valstr));
@@ -132,38 +132,38 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     isofd = open(fname, O_RDWR);
 
     if (isofd < 0) {
-	*errstr = "Error - Unable to open file %s\n\n";
-	return -1;
+        *errstr = "Error - Unable to open file %s\n\n";
+        return -1;
     }
 
     pvd_offset = parsepvd(isofd, mediasum, &isosize);
     if (pvd_offset < 0) {
-	*errstr = "Could not find primary volumne!\n\n";
-	return -1;
+        *errstr = "Could not find primary volumne!\n\n";
+        return -1;
     }
 
     lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
     nread = read(isofd, orig_appdata, 512);
 
     if (!forceit) {
-	dirty = 0;
-	for (i=0; i < 512; i++)
-	    if (orig_appdata[i] != ' ')
-		dirty = 1;
+        dirty = 0;
+        for (i=0; i < 512; i++)
+            if (orig_appdata[i] != ' ')
+                dirty = 1;
 
-	if (dirty) {
-	    *errstr = "Application data has been used - not implanting md5sum!\n";
-	    return -1;
-	}
+        if (dirty) {
+            *errstr = "Application data has been used - not implanting md5sum!\n";
+            return -1;
+        }
     } else {
-	/* write out blanks to erase old app data */
-	lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
-	memset(new_appdata, ' ', 512);
-	i = write(isofd, new_appdata, 512);
-	if (i<0) {
-	    printf("write failed %d\n", i);
-	    perror("");
-	}
+        /* write out blanks to erase old app data */
+        lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
+        memset(new_appdata, ' ', 512);
+        i = write(isofd, new_appdata, 512);
+        if (i<0) {
+            printf("write failed %d\n", i);
+            perror("");
+        }
     }
 
     /* now do md5sum */
@@ -178,17 +178,17 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     /* sectors on burned CDs                                            */
     while (total < isosize - SKIPSECTORS*2048) {
         nattempt = MIN(isosize - SKIPSECTORS*2048 - total, bufsize);
-	nread = read(isofd, buf, nattempt);
+        nread = read(isofd, buf, nattempt);
 
-	if (nread <= 0)
-	    break;
-	
-	MD5_Update(&md5ctx, buf, nread);
+        if (nread <= 0)
+            break;
+
+        MD5_Update(&md5ctx, buf, nread);
 
         /* if we're onto the next fragment, calculate the previous sum and write */
         current_fragment = total * (FRAGMENT_COUNT+1) / (isosize - SKIPSECTORS*2048);
         if ( current_fragment != previous_fragment ) {
-	    memcpy(&fragmd5ctx, &md5ctx, sizeof(MD5_CTX));
+            memcpy(&fragmd5ctx, &md5ctx, sizeof(MD5_CTX));
             MD5_Final(fragmd5sum, &fragmd5ctx);
             for (i=0; i<FRAGMENT_SUM_LENGTH/FRAGMENT_COUNT; i++) {
                 char tmpstr[2];
@@ -199,7 +199,7 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
             previous_fragment = current_fragment;
         }
 
-	total = total + nread;
+        total = total + nread;
     }
     free(buf);
 
@@ -207,17 +207,17 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
 
     *md5str = '\0';
     for (i=0; i<16; i++) {
-	char tmpstr[4];
-	snprintf (tmpstr, 4, "%02x", md5sum[i]);
-	strncat(md5str, tmpstr, 2);
+        char tmpstr[4];
+        snprintf (tmpstr, 4, "%02x", md5sum[i]);
+        strncat(md5str, tmpstr, 2);
     }
 
     if (!quiet) {
-	printf("Inserting md5sum into iso image...\n");
-	printf("md5 = %s\n", md5str);
-	printf("Inserting fragment md5sums into iso image...\n");
-	printf("fragmd5 = %s\n", fragstr);
-	printf("frags = %d\n", FRAGMENT_COUNT);
+        printf("Inserting md5sum into iso image...\n");
+        printf("md5 = %s\n", md5str);
+        printf("Inserting fragment md5sums into iso image...\n");
+        printf("fragmd5 = %s\n", fragstr);
+        printf("frags = %d\n", FRAGMENT_COUNT);
     }
     /*    memcpy(new_appdata, orig_appdata, 512); */
     memset(new_appdata, ' ', 512);
@@ -235,15 +235,15 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     free(buf);
 
     if (supported) {
-	if (!quiet)
-	    printf("Setting supported flag to 1\n");
-	loc = writeAppData(new_appdata, "RHLISOSTATUS=1", loc);
+        if (!quiet)
+            printf("Setting supported flag to 1\n");
+        loc = writeAppData(new_appdata, "RHLISOSTATUS=1", loc);
     } else {
-	if (!quiet)
-	    printf("Setting supported flag to 0\n");
-	loc = writeAppData(new_appdata, "RHLISOSTATUS=0", loc);
+        if (!quiet)
+            printf("Setting supported flag to 0\n");
+        loc = writeAppData(new_appdata, "RHLISOSTATUS=0", loc);
     }
-	
+
     loc = writeAppData(new_appdata, ";", loc);
 
     loc = writeAppData(new_appdata, "FRAGMENT SUMS = ", loc);
@@ -257,15 +257,15 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     free(buf);
 
     loc = writeAppData(new_appdata, "THIS IS NOT THE SAME AS RUNNING MD5SUM ON THIS ISO!!", loc);
-    
+
     i = lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
     if (i<0)
-	printf("seek failed\n");
+        printf("seek failed\n");
 
     i = write(isofd, new_appdata, 512);
     if (i<0) {
-	printf("write failed %d\n", i);
-	perror("");
+        printf("write failed %d\n", i);
+        perror("");
     }
 
     close(isofd);

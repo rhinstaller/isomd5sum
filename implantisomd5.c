@@ -1,6 +1,6 @@
 /*
  * simple program to insert an md5sum into application data area of iso99660
- * Copyright (C) 2001-2007 Red Hat, Inc.
+ * Copyright (C) 2001-2013 Red Hat, Inc.
  * Michael Fulbright <msf@redhat.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -43,10 +43,10 @@ int main(int argc, char **argv) {
 
     poptContext optCon;
     struct poptOption options[] = {
-	{ "force", 'f', POPT_ARG_NONE, &forceit, 0 },
-	{ "supported-iso", 'S', POPT_ARG_NONE, &supported, 0 },
-	{ "help", 'h', POPT_ARG_NONE, &help, 0},
-	{ 0, 0, 0, 0, 0}
+        { "force", 'f', POPT_ARG_NONE, &forceit, 0 },
+        { "supported-iso", 'S', POPT_ARG_NONE, &supported, 0 },
+        { "help", 'h', POPT_ARG_NONE, &help, 0},
+        { 0, 0, 0, 0, 0}
     };
 
 
@@ -54,13 +54,13 @@ int main(int argc, char **argv) {
 
     if ((rc = poptGetNextOpt(optCon)) < -1) {
         fprintf(stderr, "bad option %s: %s\n",
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
-		poptStrerror(rc));
+                poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
+                poptStrerror(rc));
         exit(1);
     }
 
     if (help)
-	usage();
+        usage();
 
     args = poptGetArgs(optCon);
     if (!args || !args[0] || !args[0][0])
@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
     if (rc) {
         fprintf(stderr, "ERROR: ");
         fprintf(stderr, errstr, (char *)args[0]);
-	exit(1);
+        exit(1);
     } else {
-	exit(0);
+        exit(0);
     }
 }
