@@ -360,6 +360,7 @@ int printMD5SUM(char *file) {
     if ( (strlen(fragmentsums) > 0) && (fragmentcount > 0) ) {
         printf("Fragment sums: %s\n", fragmentsums);
         printf("Fragment count: %lld\n", fragmentcount); 
+        printf("Supported ISO: %s\n", supported ? "yes" : "no");
     }
 
     return 0;
