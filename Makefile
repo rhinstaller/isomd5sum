@@ -4,7 +4,7 @@ PYTHONINCLUDE = /usr/include/$(PYTHON)
 
 VERSION=1.0.11
 
-ifneq (,$(filter sparc64 ppc64 x86_64 s390x aarch64,$(shell uname -m)))
+ifneq (,$(filter sparc64 ppc64 ppc64le x86_64 s390x aarch64,$(shell uname -m)))
 LIBDIR = lib64
 else
 LIBDIR = lib
