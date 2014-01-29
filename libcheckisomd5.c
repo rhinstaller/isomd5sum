@@ -94,7 +94,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
             mediasum[32] = '\0';
             md5fnd = 1;
             loc += 45;
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else if (!strncmp(buf2 + loc, "SKIPSECTORS = ", 14)) {
             char *errptr;
 
@@ -103,7 +103,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
                 return -1;
 
             loc = loc + 14;
-            for (p=tmpbuf; buf2[loc] != ';' && loc < 512; p++, loc++)
+            for (p=tmpbuf; loc < 512 && buf2[loc] != ';'; p++, loc++)
                 *p = buf2[loc];
 
             *p = '\0';
@@ -115,15 +115,15 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
                 skipfnd = 1;
             }
 
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else if (!strncmp(buf2 + loc, "RHLISOSTATUS=1", 14)) {
             *supported = 1;
             supportedfnd = 1;
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else if (!strncmp(buf2 + loc, "RHLISOSTATUS=0", 14)) {
             *supported = 0;
             supportedfnd = 1;
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else if (!strncmp(buf2 + loc, "FRAGMENT SUMS = ", 16)) {
             /* make sure we dont walk off end */
             if ((loc + FRAGMENT_SUM_LENGTH) > 511)
@@ -133,7 +133,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
             fragmentsums[FRAGMENT_SUM_LENGTH] = '\0';
             fragsumfnd = 1;
             loc += FRAGMENT_SUM_LENGTH + 16;
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else if (!strncmp(buf2 + loc, "FRAGMENT COUNT = ", 17)) {
             char *errptr;
             /* make sure we dont walk off end */
@@ -141,7 +141,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
                 return -1;
 
             loc = loc + 17;
-            for (p=tmpbuf; buf2[loc] != ';' && loc < 512; p++, loc++)
+            for (p=tmpbuf; loc < 512 && buf2[loc] != ';'; p++, loc++)
                 *p = buf2[loc];
 
             *p = '\0';
@@ -153,7 +153,7 @@ static int parsepvd(int isofd, char *mediasum, int *skipsectors, long long *isos
                 fragcntfnd = 1;
             }
 
-            for (p=buf2+loc; *p != ';' && loc < 512; p++, loc++);
+            for (p=buf2+loc; loc < 512 && *p != ';'; p++, loc++);
         } else {
             loc++;
         }
