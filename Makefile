@@ -1,6 +1,6 @@
-PYVER  := $(shell python -c 'import sys; print sys.version[0:3]')
+PYVER  := $(shell python3 -c 'import sys; print(sys.version[0:3])')
 PYTHON = python$(PYVER)
-PYTHONINCLUDE = /usr/include/$(PYTHON)
+PYTHONINCLUDE := $(shell python3-config --includes)
 
 VERSION=1.0.12
 
@@ -10,7 +10,7 @@ else
 LIBDIR = lib
 endif
 
-CFLAGS += -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC -I$(PYTHONINCLUDE)
+CFLAGS += -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC $(PYTHONINCLUDE)
 
 OBJECTS = md5.o libimplantisomd5.o checkisomd5.o implantisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
