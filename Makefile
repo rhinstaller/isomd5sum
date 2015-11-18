@@ -1,5 +1,4 @@
-PYVER  := $(shell python3 -c 'import sys; print(sys.version[0:3])')
-PYTHON = python$(PYVER)
+PYTHONSITEPACKAGES := $(shell python3 -c 'import site; print(site.getsitepackages()[0])')
 PYTHONINCLUDE := $(shell python3-config --includes)
 
 VERSION=1.0.12
@@ -47,8 +46,8 @@ install-bin:
 	install -m 0644 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
 
 install-python:
-	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
-	install -m 0755 pyisomd5sum.so $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
+	install -d -m 0755 $(DESTDIR)$(PYTHONSITEPACKAGES)
+	install -m 0755 pyisomd5sum.so $(DESTDIR)$(PYTHONSITEPACKAGES)
 
 install-devel:
 	install -d -m 0755 $(DESTDIR)/usr/include
