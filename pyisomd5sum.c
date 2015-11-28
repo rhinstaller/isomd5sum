@@ -86,6 +86,7 @@ static PyObject * doImplantIsoMD5Sum(PyObject * s, PyObject * args) {
     return Py_BuildValue("i", rc);
 }
 
+#ifdef PYTHON_ABI_VERSION
 static struct PyModuleDef pyisomd5sum = {
     PyModuleDef_HEAD_INIT,
     "pyisomd5sum",
@@ -97,3 +98,8 @@ static struct PyModuleDef pyisomd5sum = {
 PyMODINIT_FUNC PyInit_pyisomd5sum(void) {
     return PyModule_Create(&pyisomd5sum);
 }
+#else
+void initpyisomd5sum(void) {
+    (void)Py_InitModule("pyisomd5sum", isomd5sumMethods);
+}
+#endif

@@ -1,5 +1,6 @@
-PYTHONSITEPACKAGES := $(shell python3 -c 'import site; print(site.getsitepackages()[0])')
-PYTHONINCLUDE := $(shell python3-config --includes)
+PYTHON := python3
+PYTHONSITEPACKAGES := $(shell $(PYTHON) -c 'import site; print(site.getsitepackages()[0])')
+PYTHONINCLUDE := $(shell $(PYTHON)-config --includes)
 
 VERSION=1.0.12
 
