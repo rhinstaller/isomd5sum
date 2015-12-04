@@ -1,6 +1,5 @@
-PYVER  := $(shell python -c 'import sys; print sys.version[0:3]')
-PYTHON = python$(PYVER)
-PYTHONINCLUDE = /usr/include/$(PYTHON)
+PYTHONSITEPACKAGES := $(shell python3 -c 'import site; print(site.getsitepackages()[0])')
+PYTHONINCLUDE := $(shell python3-config --includes)
 
 VERSION=1.0.12
 
@@ -10,7 +9,7 @@ else
 LIBDIR = lib
 endif
 
-CFLAGS += -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC -I$(PYTHONINCLUDE)
+CFLAGS += -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC $(PYTHONINCLUDE)
 
 OBJECTS = md5.o libimplantisomd5.o checkisomd5.o implantisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
@@ -47,8 +46,8 @@ install-bin:
 	install -m 0644 checkisomd5.1 $(DESTDIR)/usr/share/man/man1
 
 install-python:
-	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
-	install -m 0755 pyisomd5sum.so $(DESTDIR)/usr/$(LIBDIR)/$(PYTHON)/site-packages
+	install -d -m 0755 $(DESTDIR)$(PYTHONSITEPACKAGES)
+	install -m 0755 pyisomd5sum.so $(DESTDIR)$(PYTHONSITEPACKAGES)
 
 install-devel:
 	install -d -m 0755 $(DESTDIR)/usr/include
