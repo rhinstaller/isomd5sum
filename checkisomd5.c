@@ -68,9 +68,9 @@ static int outputCB(void *const co, const off_t offset, const off_t total) {
     return user_bailing_out();
 }
 
-static void usage(void) {
+static int usage(void) {
     fprintf(stderr, "Usage: checkisomd5 [--md5sumonly] [--verbose] [--gauge] <isofilename>|<blockdevice>\n\n");
-    exit(1);
+    return 1;
 }
 
 /* Process the result code and return the proper exit status value
@@ -137,28 +137,35 @@ int main(int argc, char **argv) {
         fprintf(stderr, "bad option %s: %s\n",
                 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
                 poptStrerror(rc));
-        exit(1);
+        poptFreeContext(optCon);
+        return 1;
     }
 
-    if (help)
-        usage();
+    if (help) {
+        poptFreeContext(optCon);
+        return usage();
+    }
 
     const char **args = poptGetArgs(optCon);
-    if (!args || !args[0] || !args[0][0])
-        usage();
+    if (!args || !args[0] || !args[0][0]) {
+        poptFreeContext(optCon);
+        return usage();
+    }
 
     if (md5only | data.verbose) {
         rc = printMD5SUM((char *) args[0]);
         if (rc < 0) {
-            exit(processExitStatus(rc));
+            poptFreeContext(optCon);
+            return processExitStatus(rc);
         }
     }
 
-    if (md5only)
-        exit(0);
+    if (md5only) {
+        poptFreeContext(optCon);
+        return 0;
+    }
 
     printf("Press [Esc] to abort check.\n");
-
 
     static struct termios oldt;
     struct termios newt;
@@ -172,5 +179,6 @@ int main(int argc, char **argv) {
     if (data.verbose)
         printf("\n");
 
-    exit(processExitStatus(rc));
+    poptFreeContext(optCon);
+    return processExitStatus(rc);
 }

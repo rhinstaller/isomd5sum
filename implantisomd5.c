@@ -25,9 +25,9 @@
 #include "md5.h"
 #include "libimplantisomd5.h"
 
-static void usage(void) {
+static int usage(void) {
     fprintf(stderr, "implantisomd5:         implantisomd5 [--force] [--supported-iso] <isofilename>\n");
-    exit(1);
+    return 1;
 }
 
 int main(int argc, char **argv) {
@@ -51,22 +51,27 @@ int main(int argc, char **argv) {
         fprintf(stderr, "bad option %s: %s\n",
                 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
                 poptStrerror(rc));
-        exit(1);
+        poptFreeContext(optCon);
+        return 1;
     }
 
-    if (help)
-        usage();
+    if (help) {
+        poptFreeContext(optCon);
+        return usage();
+    }
 
     const char **args = poptGetArgs(optCon);
-    if (!args || !args[0] || !args[0][0])
-        usage();
+    if (!args || !args[0] || !args[0][0]) {
+        poptFreeContext(optCon);
+        return usage();
+    }
 
     rc = implantISOFile((char *) args[0], supported, forceit, 0, &errstr);
     if (rc) {
         fprintf(stderr, "ERROR: ");
         fprintf(stderr, errstr, (char *) args[0]);
-        exit(1);
-    } else {
-        exit(0);
+        rc = 1;
     }
+    poptFreeContext(optCon);
+    return rc;
 }
