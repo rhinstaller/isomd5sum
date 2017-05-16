@@ -33,23 +33,20 @@ struct progressCBData {
     int gaugeat;
 };
 
-int user_bailing_out() {
-  int retval = 0;
-  struct timeval timev;
-  fd_set rfds;
-  char ch;
+int user_bailing_out(void) {
+    struct timeval timev;
+    fd_set rfds;
 
-  FD_ZERO(&rfds);
-  FD_SET(0,&rfds);
+    FD_ZERO(&rfds);
+    FD_SET(0, &rfds);
 
-  timev.tv_sec = 0;
-  timev.tv_usec = 0;
+    timev.tv_sec = 0;
+    timev.tv_usec = 0;
 
-  if (select(1, &rfds, NULL, NULL, &timev))
-    if ((ch = getchar()) == 27)
-      retval = 1;
+    if (select(1, &rfds, NULL, NULL, &timev) && getchar() == 27)
+        return 1;
 
-  return retval;
+    return 0;
 }
 
 static int outputCB(void *const co, const off_t offset, const off_t total) {
@@ -57,18 +54,17 @@ static int outputCB(void *const co, const off_t offset, const off_t total) {
     int gaugeval = -1;
 
     if (data->verbose) {
-        printf("\rChecking: %05.1f%%", (100.0*offset)/(total));
+        printf("\rChecking: %05.1f%%", (100.0 * (double) offset) / (double) total);
         fflush(stdout);
     }
     if (data->gauge) {
-        gaugeval = (100.0*offset)/(total);
+        gaugeval = (int) ((100.0 * (double) offset) / (double) total);
         if (gaugeval != data->gaugeat) {
             printf("%d\n", gaugeval);
             fflush(stdout);
             data->gaugeat = gaugeval;
         }
     }
-
     return user_bailing_out();
 }
 
@@ -77,13 +73,12 @@ static void usage(void) {
     exit(1);
 }
 
-
 /* Process the result code and return the proper exit status value
  *
  * return 1 for failures, 0 for good checksum and 2 if aborted.
  */
-int processExitStatus(int rc) {
-    char * result;
+int processExitStatus(const int rc) {
+    char *result;
     int exit_rc;
 
     switch (rc) {
@@ -115,38 +110,30 @@ int processExitStatus(int rc) {
 
     fprintf(stderr, "\nThe media check is complete, the result is: %s\n", result);
 
-    return(exit_rc);
+    return exit_rc;
 }
 
-
 int main(int argc, char **argv) {
-    int rc;
-    const char **args;
-    int md5only;
-    int help;
     struct progressCBData data;
-    poptContext optCon;
-
-    memset(&data, 0, sizeof(struct progressCBData));
-
-    md5only = 0;
-    help = 0;
+    memset(&data, 0, sizeof(data));
     data.verbose = 0;
     data.gauge = 0;
+
+    int md5only = 0;
+    int help = 0;
 
     struct poptOption options[] = {
         { "md5sumonly", 'o', POPT_ARG_NONE, &md5only, 0 },
         { "verbose", 'v', POPT_ARG_NONE, &data.verbose, 0 },
-        { "gauge", 'g', POPT_ARG_NONE, &data.gauge, 0},
-        { "help", 'h', POPT_ARG_NONE, &help, 0},
-        { 0, 0, 0, 0, 0}
+        { "gauge", 'g', POPT_ARG_NONE, &data.gauge, 0 },
+        { "help", 'h', POPT_ARG_NONE, &help, 0 },
+        { 0, 0, 0, 0, 0 }
     };
 
-    static struct termios oldt, newt;
+    poptContext optCon = poptGetContext("checkisomd5", argc, (const char **) argv, options, 0);
 
-    optCon = poptGetContext("checkisomd5", argc, (const char **)argv, options, 0);
-
-    if ((rc = poptGetNextOpt(optCon)) < -1) {
+    int rc = poptGetNextOpt(optCon);
+    if (rc < -1) {
         fprintf(stderr, "bad option %s: %s\n",
                 poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
                 poptStrerror(rc));
@@ -156,12 +143,12 @@ int main(int argc, char **argv) {
     if (help)
         usage();
 
-    args = poptGetArgs(optCon);
+    const char **args = poptGetArgs(optCon);
     if (!args || !args[0] || !args[0][0])
         usage();
 
-    if (md5only|data.verbose) {
-        rc = printMD5SUM((char *)args[0]);
+    if (md5only | data.verbose) {
+        rc = printMD5SUM((char *) args[0]);
         if (rc < 0) {
             exit(processExitStatus(rc));
         }
@@ -172,11 +159,14 @@ int main(int argc, char **argv) {
 
     printf("Press [Esc] to abort check.\n");
 
+
+    static struct termios oldt;
+    struct termios newt;
     tcgetattr(0, &oldt);
     newt = oldt;
     newt.c_lflag &= ~(ICANON | ECHO | ECHONL | ISIG | IEXTEN);
     tcsetattr(0, TCSANOW, &newt);
-    rc = mediaCheckFile((char *)args[0], outputCB, &data);
+    rc = mediaCheckFile((char *) args[0], outputCB, &data);
     tcsetattr(0, TCSANOW, &oldt);
 
     if (data.verbose)
@@ -184,4 +174,3 @@ int main(int argc, char **argv) {
 
     exit(processExitStatus(rc));
 }
- 

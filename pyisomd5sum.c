@@ -23,14 +23,14 @@
 #include "libcheckisomd5.h"
 #include "libimplantisomd5.h"
 
-static PyObject * doCheckIsoMD5Sum(PyObject * s, PyObject * args);
-static PyObject * doImplantIsoMD5Sum(PyObject * s, PyObject * args);
+static PyObject *doCheckIsoMD5Sum(PyObject *s, PyObject *args);
+static PyObject *doImplantIsoMD5Sum(PyObject *s, PyObject *args);
 
 static PyMethodDef isomd5sumMethods[] = {
     { "checkisomd5sum", (PyCFunction) doCheckIsoMD5Sum, METH_VARARGS, NULL },
     { "implantisomd5sum", (PyCFunction) doImplantIsoMD5Sum, METH_VARARGS, NULL },
     { NULL }
-} ;
+};
 
 /* Call python object with offset and total
  * If the object returns true return 1 to abort the check
@@ -44,14 +44,14 @@ int pythonCB(void *cbdata, off_t offset, off_t total) {
     Py_DECREF(arglist);
 
     if (result == NULL)
-       return 1;
+        return 1;
 
     rc = PyObject_IsTrue(result);
     Py_DECREF(result);
     return (rc > 0);
 }
 
-static PyObject * doCheckIsoMD5Sum(PyObject * s, PyObject * args) {
+static PyObject *doCheckIsoMD5Sum(PyObject *s, PyObject *args) {
     PyObject *callback = NULL;
     char *isofile;
     int rc;
@@ -74,7 +74,7 @@ static PyObject * doCheckIsoMD5Sum(PyObject * s, PyObject * args) {
     return Py_BuildValue("i", rc);
 }
 
-static PyObject * doImplantIsoMD5Sum(PyObject * s, PyObject * args) {
+static PyObject *doImplantIsoMD5Sum(PyObject *s, PyObject *args) {
     char *isofile, *errstr;
     int forceit, supported;
     int rc;
@@ -101,6 +101,6 @@ PyMODINIT_FUNC PyInit_pyisomd5sum(void) {
 }
 #else
 void initpyisomd5sum(void) {
-    (void)Py_InitModule("pyisomd5sum", isomd5sumMethods);
+    (void) Py_InitModule("pyisomd5sum", isomd5sumMethods);
 }
 #endif
