@@ -52,8 +52,8 @@ int user_bailing_out() {
   return retval;
 }
 
-static int outputCB(void *co, long long offset, long long total) {
-    struct progressCBData *data = co;
+static int outputCB(void *const co, const off_t offset, const off_t total) {
+    struct progressCBData *const data = co;
     int gaugeval = -1;
 
     if (data->verbose) {

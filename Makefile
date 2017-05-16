@@ -10,7 +10,7 @@ else
 LIBDIR = lib
 endif
 
-CFLAGS += -Wall -Werror -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC $(PYTHONINCLUDE)
+CFLAGS += -std=gnu11 -Wall -Werror -D_GNU_SOURCE=1 -fPIC $(PYTHONINCLUDE)
 
 OBJECTS = md5.o libimplantisomd5.o checkisomd5.o implantisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
@@ -21,7 +21,7 @@ PYOBJS = pyisomd5sum.o libcheckisomd5.a libimplantisomd5.a
 all: implantisomd5 checkisomd5 pyisomd5sum.so libimplantisomd5.a libcheckisomd5.a
 
 %.o: %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c -O -o $@ $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c -O3 -o $@ $<
 
 implantisomd5: implantisomd5.o libimplantisomd5.a
 	$(CC) $(CPPFLAGS) $(CFLAGS) implantisomd5.o libimplantisomd5.a -lpopt $(LDFLAGS) -o implantisomd5
