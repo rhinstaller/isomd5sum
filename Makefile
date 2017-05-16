@@ -29,9 +29,9 @@ implantisomd5: implantisomd5.o libimplantisomd5.a
 checkisomd5: checkisomd5.o libcheckisomd5.a
 	$(CC) $(CPPFLAGS) $(CFLAGS) checkisomd5.o libcheckisomd5.a -lpopt $(LDFLAGS) -o checkisomd5
 
-libimplantisomd5.a: libimplantisomd5.a(libimplantisomd5.o md5.o)
+libimplantisomd5.a: libimplantisomd5.a(libimplantisomd5.o md5.o utilities.o)
 
-libcheckisomd5.a: libcheckisomd5.a(libcheckisomd5.o md5.o)
+libcheckisomd5.a: libcheckisomd5.a(libcheckisomd5.o md5.o utilities.o)
 
 pyisomd5sum.so: $(PYOBJS)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -shared -g -fpic $(PYOBJS) $(LDFLAGS) -o pyisomd5sum.so

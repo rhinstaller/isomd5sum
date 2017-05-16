@@ -45,14 +45,16 @@ int getpagesize() { return 2048; }
 /* FRAGMENT_COUNT must be an integral divisor or FRAGMENT_SUM_SIZE */
 /* 60 => 2, 3, 4, 5, 6, 10, 12, 15, 20, or 30 */
 #define FRAGMENT_COUNT 20UL
+/* Size offset according to ECMA-119 8.4.8 volume space size in big endian
+ * format. */
 #define SIZE_OFFSET 84
 /* Number of sectors to ignore at end of iso when computing sum. These are
  * ignored due to problems reading last few sectors on burned CDs. */
 #define SKIPSECTORS 15LL
-/* ISO 9660 magic values. */
 #define SECTOR_SIZE 2048LL
 #define NUM_SYSTEM_SECTORS 16LL
 #define SYSTEM_AREA_SIZE (NUM_SYSTEM_SECTORS * SECTOR_SIZE)
+/* According to ECMA-119 8.4.32 */
 #define APPDATA_OFFSET 883LL
 #define APPDATA_SIZE 512
 
@@ -68,7 +70,6 @@ struct volume_info {
 
 off_t primary_volume_size(const int isofd, off_t *const offset);
 
-/* Find the primary volume descriptor and return info from it. */
 struct volume_info *const parsepvd(const int isofd);
 
 bool validate_fragment(const MD5_CTX *const hashctx, const size_t fragment,
