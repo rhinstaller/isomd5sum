@@ -69,3 +69,6 @@ tag:
 archive:
 	@git archive --format=tar --prefix=isomd5sum-$(VERSION)/ HEAD |bzip2 > isomd5sum-$(VERSION).tar.bz2
 	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
+
+test:
+	./testpyisomd5sum.py
