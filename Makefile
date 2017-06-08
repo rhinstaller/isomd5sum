@@ -10,7 +10,7 @@ else
 LIBDIR = lib
 endif
 
-CFLAGS += -std=gnu11 -Wall -Werror -D_GNU_SOURCE=1 -fPIC $(PYTHONINCLUDE)
+CFLAGS += -std=gnu11 -Wall -D_GNU_SOURCE=1 -fPIC $(PYTHONINCLUDE)
 
 OBJECTS = md5.o libimplantisomd5.o checkisomd5.o implantisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
