@@ -131,7 +131,7 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
         printf("md5 = %s\n", hashsum);
         printf("Inserting fragment md5sums into iso image...\n");
         printf("fragmd5 = %s\n", fragmentsums);
-        printf("frags = %ld\n", FRAGMENT_COUNT);
+        printf("frags = %lu\n", FRAGMENT_COUNT);
     }
     memset(appdata, ' ', APPDATA_SIZE);
 
@@ -170,7 +170,7 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     if (writeAppData(appdata, ";", &loc, errstr))
         goto fail;
 
-    snprintf(appdata_buffer, APPDATA_SIZE, "FRAGMENT COUNT = %ld", FRAGMENT_COUNT);
+    snprintf(appdata_buffer, APPDATA_SIZE, "FRAGMENT COUNT = %lu", FRAGMENT_COUNT);
     if (writeAppData(appdata, appdata_buffer, &loc, errstr))
         goto fail;
     if (writeAppData(appdata, ";", &loc, errstr))
