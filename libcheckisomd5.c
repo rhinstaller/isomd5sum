@@ -125,6 +125,12 @@ int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
     if (isofd < 0) {
         return ISOMD5SUM_FILE_NOT_FOUND;
     }
+    int rc = checkmd5sum(isofd, cb, cbdata);
+    close(isofd);
+    return rc;
+}
+
+int mediaCheckFD(int isofd, checkCallback cb, void *cbdata) {
     return checkmd5sum(isofd, cb, cbdata);
 }
 
