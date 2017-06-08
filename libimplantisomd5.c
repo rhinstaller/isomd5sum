@@ -47,34 +47,38 @@ static int writeAppData(unsigned char *const appdata, const char *const valstr, 
     return 0;
 }
 
-int implantISOFile(char *fname, int supported, int forceit, int quiet, char **errstr) {
-    int isofd = open(fname, O_RDWR | O_BINARY);
+int implantISOFile(char *iso, int supported, int forceit, int quiet, char **errstr) {
+    int isofd = open(iso, O_RDWR | O_BINARY);
     if (isofd < 0) {
         *errstr = "Error - Unable to open file %s\n\n";
         return -1;
     }
+    int rc = implantISOFD(isofd, supported, forceit, quiet, errstr);
+    close(isofd);
+    return rc;
+}
 
-    int errcode = -1;
+int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr) {
+
     off_t pvd_offset;
     const off_t isosize = primary_volume_size(isofd, &pvd_offset);
     if (isosize == 0) {
         *errstr = "Could not find primary volume!\n\n";
-        goto fail;
+        return -1;
     }
 
     lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
     unsigned char appdata[APPDATA_SIZE];
     if (read(isofd, appdata, APPDATA_SIZE) <= 0) {
-        errcode = -errno;
         *errstr = "Failed to read application data from file.\n\n";
-        goto fail;
+        return -errno;
     }
 
     if (!forceit) {
         for (size_t i = 0; i < APPDATA_SIZE; i++) {
             if (appdata[i] != ' ') {
                 *errstr = "Application data has been used - not implanting md5sum!\n\n";
-                goto fail;
+                return -1;
             }
         }
     } else {
@@ -84,8 +88,7 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
         ssize_t error = write(isofd, appdata, APPDATA_SIZE);
         if (error < 0) {
             *errstr = "Write failed.\n\n";
-            errcode = error;
-            goto fail;
+            return error;
         }
     }
 
@@ -137,20 +140,20 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
 
     size_t loc = 0;
     if (writeAppData(appdata, "ISO MD5SUM = ", &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, hashsum, &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, ";", &loc, errstr))
-        goto fail;
+        return -1;
 
     char *appdata_buffer;
     appdata_buffer = aligned_alloc(pagesize, APPDATA_SIZE * sizeof(*appdata_buffer));
     snprintf(appdata_buffer, APPDATA_SIZE, "SKIPSECTORS = %lld", SKIPSECTORS);
 
     if (writeAppData(appdata, appdata_buffer, &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, ";", &loc, errstr))
-        goto fail;
+        return -1;
 
     if (!quiet)
         printf("Setting supported flag to %d\n", supported);
@@ -158,43 +161,39 @@ int implantISOFile(char *fname, int supported, int forceit, int quiet, char **er
     char tmp[sizeof(status) / sizeof(*status)];
     snprintf(tmp, sizeof(status) / sizeof(*status), status, supported);
     if (writeAppData(appdata, tmp, &loc, errstr))
-        goto fail;
+        return -1;
 
     if (writeAppData(appdata, ";", &loc, errstr))
-        goto fail;
+        return -1;
 
     if (writeAppData(appdata, "FRAGMENT SUMS = ", &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, fragmentsums, &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, ";", &loc, errstr))
-        goto fail;
+        return -1;
 
     snprintf(appdata_buffer, APPDATA_SIZE, "FRAGMENT COUNT = %ld", FRAGMENT_COUNT);
     if (writeAppData(appdata, appdata_buffer, &loc, errstr))
-        goto fail;
+        return -1;
     if (writeAppData(appdata, ";", &loc, errstr))
-        goto fail;
+        return -1;
 
     if (writeAppData(
             appdata, "THIS IS NOT THE SAME AS RUNNING MD5SUM ON THIS ISO!!", &loc, errstr))
-        goto fail;
+        return -1;
 
     if (lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET) < 0) {
         *errstr = "Seek failed.\n\n";
-        goto fail;
+        return -1;
     }
 
     ssize_t error = write(isofd, appdata, APPDATA_SIZE);
     if (error < 0) {
         *errstr = "Write failed.\n\n";
-        goto fail;
+        return -1;
     }
 
-    close(isofd);
     errstr = NULL;
     return 0;
-fail:
-    close(isofd);
-    return errcode;
 }
