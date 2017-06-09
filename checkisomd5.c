@@ -49,7 +49,7 @@ int user_bailing_out(void) {
     return 0;
 }
 
-static int outputCB(void *const co, const off_t offset, const off_t total) {
+static int outputCB(void *const co, const long long offset, const long long total) {
     struct progressCBData *const data = co;
     int gaugeval = -1;
 
