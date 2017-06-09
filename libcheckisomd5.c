@@ -120,7 +120,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     return failed ? ISOMD5SUM_CHECK_FAILED : ISOMD5SUM_CHECK_PASSED;
 }
 
-int mediaCheckFile(char *file, checkCallback cb, void *cbdata) {
+int mediaCheckFile(const char *file, checkCallback cb, void *cbdata) {
     int isofd = open(file, O_RDONLY | O_BINARY);
     if (isofd < 0) {
         return ISOMD5SUM_FILE_NOT_FOUND;
@@ -134,7 +134,7 @@ int mediaCheckFD(int isofd, checkCallback cb, void *cbdata) {
     return checkmd5sum(isofd, cb, cbdata);
 }
 
-int printMD5SUM(char *file) {
+int printMD5SUM(const char *file) {
     int isofd = open(file, O_RDONLY | O_BINARY);
     if (isofd < 0) {
         return ISOMD5SUM_FILE_NOT_FOUND;
