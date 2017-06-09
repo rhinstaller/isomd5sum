@@ -50,7 +50,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
 
     const off_t total_size = info->isosize - info->skipsectors * SECTOR_SIZE;
     if (cb)
-        cb(cbdata, 0, total_size);
+        cb(cbdata, 0LL, (long long) total_size);
 
     /* Rewind, compute md5sum. */
     lseek(isofd, 0LL, SEEK_SET);
@@ -101,7 +101,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
         }
         offset += nread;
         if (cb)
-            if (cb(cbdata, offset, total_size)) {
+            if (cb(cbdata, (long long) offset, (long long) total_size)) {
                 free(info);
                 free(buffer);
                 return ISOMD5SUM_CHECK_ABORTED;
@@ -110,7 +110,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     free(buffer);
 
     if (cb)
-        cb(cbdata, info->isosize, total_size);
+        cb(cbdata, (long long) info->isosize, (long long) total_size);
 
     char hashsum[HASH_SIZE + 1];
     md5sum(hashsum, &hashctx);

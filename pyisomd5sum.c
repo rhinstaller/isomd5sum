@@ -35,7 +35,7 @@ static PyMethodDef isomd5sumMethods[] = {
 /* Call python object with offset and total
  * If the object returns true return 1 to abort the check
  */
-int pythonCB(void *cbdata, off_t offset, off_t total) {
+int pythonCB(void *cbdata, long long offset, long long total) {
     PyObject *arglist, *result;
     int rc;
 
