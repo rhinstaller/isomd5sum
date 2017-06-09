@@ -113,7 +113,7 @@ int processExitStatus(const int rc) {
     return exit_rc;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, const char **argv) {
     struct progressCBData data;
     memset(&data, 0, sizeof(data));
     data.verbose = 0;
@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
         { 0, 0, 0, 0, 0 }
     };
 
-    poptContext optCon = poptGetContext("checkisomd5", argc, (const char **) argv, options, 0);
+    poptContext optCon = poptGetContext("checkisomd5", argc, argv, options, 0);
 
     int rc = poptGetNextOpt(optCon);
     if (rc < -1) {
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
     }
 
     if (md5only | data.verbose) {
-        rc = printMD5SUM((char *) args[0]);
+        rc = printMD5SUM(args[0]);
         if (rc < 0) {
             poptFreeContext(optCon);
             return processExitStatus(rc);
@@ -173,7 +173,7 @@ int main(int argc, char **argv) {
     newt = oldt;
     newt.c_lflag &= ~(ICANON | ECHO | ECHONL | ISIG | IEXTEN);
     tcsetattr(0, TCSANOW, &newt);
-    rc = mediaCheckFile((char *) args[0], outputCB, &data);
+    rc = mediaCheckFile(args[0], outputCB, &data);
     tcsetattr(0, TCSANOW, &oldt);
 
     if (data.verbose)

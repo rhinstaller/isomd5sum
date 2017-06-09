@@ -14,8 +14,8 @@ enum isomd5sum_status {
 /* For non-zero return value, check is aborted. */
 typedef int (*checkCallback)(void *, off_t offset, off_t total);
 
-int mediaCheckFile(char *iso, checkCallback cb, void *cbdata);
+int mediaCheckFile(const char *file, checkCallback cb, void *cbdata);
 int mediaCheckFD(int isofd, checkCallback cb, void *cbdata);
-int printMD5SUM(char *file);
+int printMD5SUM(const char *file);
 
 #endif

@@ -47,7 +47,7 @@ static int writeAppData(unsigned char *const appdata, const char *const valstr, 
     return 0;
 }
 
-int implantISOFile(char *iso, int supported, int forceit, int quiet, char **errstr) {
+int implantISOFile(const char *iso, int supported, int forceit, int quiet, char **errstr) {
     int isofd = open(iso, O_RDWR | O_BINARY);
     if (isofd < 0) {
         *errstr = "Error - Unable to open file %s\n\n";

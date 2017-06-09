@@ -30,7 +30,7 @@ static int usage(void) {
     return 1;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, const char **argv) {
     char *errstr;
 
     int forceit = 0;
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         { 0, 0, 0, 0, 0 }
     };
 
-    poptContext optCon = poptGetContext("implantisomd5", argc, (const char **) argv, options, 0);
+    poptContext optCon = poptGetContext("implantisomd5", argc, argv, options, 0);
 
     int rc;
     if ((rc = poptGetNextOpt(optCon)) < -1) {
@@ -66,10 +66,10 @@ int main(int argc, char **argv) {
         return usage();
     }
 
-    rc = implantISOFile((char *) args[0], supported, forceit, 0, &errstr);
+    rc = implantISOFile(args[0], supported, forceit, 0, &errstr);
     if (rc) {
         fprintf(stderr, "ERROR: ");
-        fprintf(stderr, errstr, (char *) args[0]);
+        fprintf(stderr, errstr, args[0]);
         rc = 1;
     }
     poptFreeContext(optCon);
