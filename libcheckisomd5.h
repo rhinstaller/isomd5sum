@@ -1,6 +1,10 @@
 #ifndef __LIBCHECKISOMD5_H__
 #define __LIBCHECKISOMD5_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <sys/types.h>
 
 enum isomd5sum_status {
@@ -17,5 +21,9 @@ typedef int (*checkCallback)(void *, off_t offset, off_t total);
 int mediaCheckFile(char *iso, checkCallback cb, void *cbdata);
 int mediaCheckFD(int isofd, checkCallback cb, void *cbdata);
 int printMD5SUM(char *file);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
