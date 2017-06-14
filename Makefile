@@ -53,10 +53,12 @@ install-python:
 install-devel:
 	install -d -m 0755 $(DESTDIR)/usr/include
 	install -d -m 0755 $(DESTDIR)/usr/$(LIBDIR)
+	install -d -m 0755 $(DESTDIR)/usr/share/pkgconfig
 	install -m 0644 libimplantisomd5.h $(DESTDIR)/usr/include/
 	install -m 0644 libcheckisomd5.h $(DESTDIR)/usr/include/
 	install -m 0644 libimplantisomd5.a $(DESTDIR)/usr/$(LIBDIR)
 	install -m 0644 libcheckisomd5.a $(DESTDIR)/usr/$(LIBDIR)
+	sed "s#@VERSION@#${VERSION}#g; s#@includedir@#${DESTDIR}/usr/include#g; s#@libdir@#${DESTDIR}/usr/${LIBDIR}#g" isomd5sum.pc.in > ${DESTDIR}/usr/share/pkgconfig/isomd5sum.pc
 
 clean:
 	rm -f *.o *.so *.pyc *.a .depend *~

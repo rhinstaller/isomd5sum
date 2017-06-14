@@ -1,0 +1,9 @@
+includedir=@includedir@
+libdir=@libdir@
+
+Name: isomd5sum
+Description: Utilities for working with md5sum implanted in ISO images
+URL: https://github.com/rhinstaller/isomd5sum
+Version: @VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir}
