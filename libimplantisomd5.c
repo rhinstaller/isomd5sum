@@ -37,7 +37,7 @@
 static int writeAppData(unsigned char *const appdata, const char *const valstr, size_t *loc, char **errstr) {
     size_t vallen = strlen(valstr);
     if (*loc + vallen >= APPDATA_SIZE) {
-        *errstr = "Attempted to write too much appdata.\n\n";
+        *errstr = "Attempted to write too much appdata.";
         return -1;
     }
 
@@ -50,7 +50,7 @@ static int writeAppData(unsigned char *const appdata, const char *const valstr, 
 int implantISOFile(const char *iso, int supported, int forceit, int quiet, char **errstr) {
     int isofd = open(iso, O_RDWR | O_BINARY);
     if (isofd < 0) {
-        *errstr = "Error - Unable to open file %s\n\n";
+        *errstr = "Error - Unable to open file %s";
         return -1;
     }
     int rc = implantISOFD(isofd, supported, forceit, quiet, errstr);
@@ -63,21 +63,21 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
     off_t pvd_offset;
     const off_t isosize = primary_volume_size(isofd, &pvd_offset);
     if (isosize == 0) {
-        *errstr = "Could not find primary volume!\n\n";
+        *errstr = "Could not find primary volume!";
         return -1;
     }
 
     lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
     unsigned char appdata[APPDATA_SIZE];
     if (read(isofd, appdata, APPDATA_SIZE) <= 0) {
-        *errstr = "Failed to read application data from file.\n\n";
+        *errstr = "Failed to read application data from file.";
         return -errno;
     }
 
     if (!forceit) {
         for (size_t i = 0; i < APPDATA_SIZE; i++) {
             if (appdata[i] != ' ') {
-                *errstr = "Application data has been used - not implanting md5sum!\n\n";
+                *errstr = "Application data has been used - not implanting md5sum!";
                 return -1;
             }
         }
@@ -87,7 +87,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         memset(appdata, ' ', APPDATA_SIZE);
         ssize_t error = write(isofd, appdata, APPDATA_SIZE);
         if (error < 0) {
-            *errstr = "Write failed.\n\n";
+            *errstr = "Write failed.";
             return error;
         }
     }
@@ -184,13 +184,13 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         return -1;
 
     if (lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET) < 0) {
-        *errstr = "Seek failed.\n\n";
+        *errstr = "Seek failed.";
         return -1;
     }
 
     ssize_t error = write(isofd, appdata, APPDATA_SIZE);
     if (error < 0) {
-        *errstr = "Write failed.\n\n";
+        *errstr = "Write failed.";
         return -1;
     }
 
