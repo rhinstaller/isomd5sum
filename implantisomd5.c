@@ -70,6 +70,7 @@ int main(int argc, const char **argv) {
     if (rc) {
         fprintf(stderr, "ERROR: ");
         fprintf(stderr, errstr, args[0]);
+        fprintf(stderr, "\n\n");
         rc = 1;
     }
     poptFreeContext(optCon);
