@@ -146,8 +146,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
     if (writeAppData(appdata, ";", &loc, errstr))
         return -1;
 
-    char *appdata_buffer;
-    appdata_buffer = aligned_alloc(pagesize, APPDATA_SIZE * sizeof(*appdata_buffer));
+    char appdata_buffer[APPDATA_SIZE];
     snprintf(appdata_buffer, APPDATA_SIZE, "SKIPSECTORS = %lld", SKIPSECTORS);
 
     if (writeAppData(appdata, appdata_buffer, &loc, errstr))
