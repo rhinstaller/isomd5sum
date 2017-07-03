@@ -39,6 +39,7 @@ int getpagesize() { return 2048; }
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
+#define BLOCK_SIZE 512
 #define HASH_SIZE 32
 /* Length in characters of string used for fragment md5sum checking */
 #define FRAGMENT_SUM_SIZE 60UL

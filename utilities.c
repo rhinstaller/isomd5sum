@@ -41,7 +41,7 @@ static unsigned char *read_primary_volume_descriptor(const int fd, off_t *const 
         return NULL;
     }
     unsigned char *sector_buffer;
-    sector_buffer = aligned_alloc((size_t) getpagesize(), SECTOR_SIZE * sizeof(*sector_buffer));
+    sector_buffer = aligned_alloc(BLOCK_SIZE, SECTOR_SIZE * sizeof(*sector_buffer));
     /* Read n volume descriptors. */
     for (;;) {
         if (read(fd, sector_buffer, SECTOR_SIZE) == -1) {
@@ -136,8 +136,6 @@ struct volume_info *const parsepvd(const int isofd) {
     result->fragmentcount = 20;
     result->offset = offset;
     result->isosize = isosize(aligned_buffer);
-
-    free(aligned_buffer);
 
     for (size_t index = 0; index < APPDATA_SIZE;) {
         size_t len;

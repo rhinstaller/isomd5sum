@@ -67,7 +67,8 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     while (offset < total_size) {
         const size_t nbyte = MIN((size_t)(total_size - offset), buffer_size);
 
-        ssize_t nread = read(isofd, buffer, nbyte);
+        /** Read more than nbyte to make sure that it's O_DIRECT compatible. */
+        ssize_t nread = read(isofd, buffer, buffer_size);
         if (nread <= 0L)
             break;
 
@@ -76,9 +77,11 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
          * size from where it started up to the end of the block it pre-fetched
          * from a cd drive.
          */
-        if (nread > nbyte) {
-            nread = nbyte;
+        if (nread > buffer_size) {
+            nread = buffer_size;
             lseek(isofd, offset + nread, SEEK_SET);
+        } else if (nread > nbyte) {
+            nread = nbyte;
         }
         /* Make sure appdata which contains the md5sum is cleared. */
         clear_appdata(buffer, nread, info->offset + APPDATA_OFFSET, offset);
