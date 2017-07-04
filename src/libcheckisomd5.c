@@ -29,9 +29,9 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include "md5.h"
-#include "libcheckisomd5.h"
-#include "utilities.h"
+#include "./include/libcheckisomd5.h"
+#include "./include/md5.h"
+#include "./include/utilities.h"
 
 static void clear_appdata(unsigned char *const buffer, const size_t size, const off_t appdata_offset, const off_t offset) {
     static const ssize_t buffer_start = 0;
@@ -149,7 +149,7 @@ int printMD5SUM(const char *file) {
     printf("%s:   %s\n", file, info->hashsum);
     if (strlen(info->fragmentsums) > 0 && info->fragmentcount > 0) {
         printf("Fragment sums: %s\n", info->fragmentsums);
-        printf("Fragment count: %zu\n", info->fragmentcount);
+        printf("Fragment count: %lu\n", (unsigned long) (info->fragmentcount));
         printf("Supported ISO: %s\n", info->supported ? "yes" : "no");
     }
     free(info);

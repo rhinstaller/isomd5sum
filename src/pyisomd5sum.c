@@ -20,8 +20,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "libcheckisomd5.h"
-#include "libimplantisomd5.h"
+#include "./include/libcheckisomd5.h"
+#include "./include/libimplantisomd5.h"
 
 static PyObject *doCheckIsoMD5Sum(PyObject *s, PyObject *args);
 static PyObject *doImplantIsoMD5Sum(PyObject *s, PyObject *args);

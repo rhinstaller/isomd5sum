@@ -22,9 +22,27 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "md5.h"
+#include "./include/md5.h"
+#include "./include/utilities.h"
 
-#include "utilities.h"
+#ifdef _WIN32
+#include <windows.h>
+#include <malloc.h>
+
+size_t getpagesize() {
+    static size_t page_size = 0;
+    if (page_size == 0) {
+        SYSTEM_INFO system_info;
+        GetSystemInfo(&system_info);
+        page_size = (size_t)(system_info.dwPageSize);
+    }
+    return page_size;
+}
+
+void *aligned_alloc(size_t size, size_t alignment) {
+    return _aligned_malloc(size, alignment);
+}
+#endif
 
 static unsigned char *read_primary_volume_descriptor(const int fd, off_t *const offset) {
     /*

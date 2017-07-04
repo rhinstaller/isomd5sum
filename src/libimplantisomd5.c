@@ -30,9 +30,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "md5.h"
-#include "libimplantisomd5.h"
-#include "utilities.h"
+#include "./include/libimplantisomd5.h"
+#include "./include/md5.h"
+#include "./include/utilities.h"
 
 static int writeAppData(unsigned char *const appdata, const char *const valstr, size_t *loc, char **errstr) {
     size_t vallen = strlen(valstr);
@@ -148,7 +148,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         return -1;
 
     char appdata_buffer[APPDATA_SIZE];
-    snprintf(appdata_buffer, APPDATA_SIZE, "SKIPSECTORS = %lld", SKIPSECTORS);
+    snprintf(appdata_buffer, APPDATA_SIZE, "SKIPSECTORS = %ld", SKIPSECTORS);
 
     if (writeAppData(appdata, appdata_buffer, &loc, errstr))
         return -1;
