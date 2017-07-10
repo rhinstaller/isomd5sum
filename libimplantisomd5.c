@@ -41,7 +41,7 @@ static int writeAppData(unsigned char *const appdata, const char *const valstr, 
         return -1;
     }
 
-    memcpy(appdata + *loc, valstr, vallen);
+    memcpy(appdata + (APPDATA_OFFSET - BLOCK_SIZE) + *loc, valstr, vallen);
 
     *loc += vallen;
     return 0;
@@ -67,25 +67,29 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         return -1;
     }
 
-    lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
-    unsigned char appdata[APPDATA_SIZE];
-    if (read(isofd, appdata, APPDATA_SIZE) <= 0) {
+    lseek(isofd, pvd_offset + BLOCK_SIZE, SEEK_SET);
+    unsigned char appdata[BLOCK_SIZE * 2] __attribute__((aligned(BLOCK_SIZE)));
+    const size_t appdata_offset = APPDATA_OFFSET - BLOCK_SIZE;
+
+    /* Read more than needed to stay O_DIRECT compatible. */
+    if (read(isofd, appdata, BLOCK_SIZE * 2) <= 0) {
         *errstr = "Failed to read application data from file.";
         return -errno;
     }
 
     if (!forceit) {
         for (size_t i = 0; i < APPDATA_SIZE; i++) {
-            if (appdata[i] != ' ') {
+            if (appdata[appdata_offset + i] != ' ') {
                 *errstr = "Application data has been used - not implanting md5sum!";
                 return -1;
             }
         }
     } else {
         /* Write out blanks to erase old app data. */
-        lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET);
-        memset(appdata, ' ', APPDATA_SIZE);
-        ssize_t error = write(isofd, appdata, APPDATA_SIZE);
+        lseek(isofd, pvd_offset + BLOCK_SIZE, SEEK_SET);
+        memset(appdata + appdata_offset, ' ', APPDATA_SIZE);
+        /* Write more than needed to stay O_DIRECT compatible. */
+        ssize_t error = write(isofd, appdata + BLOCK_SIZE, BLOCK_SIZE * 2);
         if (error < 0) {
             *errstr = "Write failed.";
             return error;
@@ -99,7 +103,6 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
     MD5_Init(&hashctx);
     char fragmentsums[FRAGMENT_SUM_SIZE + 1];
     *fragmentsums = '\0';
-
     const size_t pagesize = (size_t) getpagesize();
     const size_t buffer_size = NUM_SYSTEM_SECTORS * SECTOR_SIZE;
     unsigned char *buffer;
@@ -136,7 +139,9 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         printf("fragmd5 = %s\n", fragmentsums);
         printf("frags = %lu\n", FRAGMENT_COUNT);
     }
-    memset(appdata, ' ', APPDATA_SIZE);
+    if (!forceit) {
+        memset(appdata + appdata_offset, ' ', APPDATA_SIZE);
+    }
 
     size_t loc = 0;
     if (writeAppData(appdata, "ISO MD5SUM = ", &loc, errstr))
@@ -182,12 +187,13 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
             appdata, "THIS IS NOT THE SAME AS RUNNING MD5SUM ON THIS ISO!!", &loc, errstr))
         return -1;
 
-    if (lseek(isofd, pvd_offset + APPDATA_OFFSET, SEEK_SET) < 0) {
+    if (lseek(isofd, pvd_offset + BLOCK_SIZE, SEEK_SET) < 0) {
         *errstr = "Seek failed.";
         return -1;
     }
 
-    ssize_t error = write(isofd, appdata, APPDATA_SIZE);
+    /* Write more than needed to stay O_DIRECT compatible. */
+    ssize_t error = write(isofd, appdata, BLOCK_SIZE * 2);
     if (error < 0) {
         *errstr = "Write failed.";
         return -1;
