@@ -59,9 +59,15 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     MD5_CTX hashctx;
     MD5_Init(&hashctx);
 
+    const size_t pagesize = (size_t) getpagesize();
+#ifdef _WIN32
+    // Allocating ~32 kB of memory sometimes fails on Windows.
+    const size_t buffer_size = MAX(SECTOR_SIZE, pagesize);
+#else
     const size_t buffer_size = NUM_SYSTEM_SECTORS * SECTOR_SIZE;
+#endif
     unsigned char *buffer;
-    buffer = aligned_alloc((size_t) getpagesize(), buffer_size * sizeof(*buffer));
+    buffer = aligned_alloc(pagesize, buffer_size * sizeof(*buffer));
 
     size_t previous_fragment = 0UL;
     off_t offset = 0LL;
