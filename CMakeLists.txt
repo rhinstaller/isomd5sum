@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 3.0)
 project(isomd5sum)
 
 if(NOT DEFINED BINDIR)
@@ -36,14 +36,14 @@ add_library(libimplantisomd5 STATIC
   src/md5.c src/utilities.c src/libimplantisomd5.c
   include/md5.h include/utilities.h include/libimplantisomd5.h)
 set_target_properties(libimplantisomd5 PROPERTIES
-  OUTPUT_NAME implantisomd5
+  PREFIX ""
   PUBLIC_HEADER include/libimplantisomd5.h)
 
 add_library(libcheckisomd5 STATIC
   src/md5.c src/utilities.c src/libcheckisomd5.c
   include/md5.h include/utilities.h include/libcheckisomd5.h)
 set_target_properties(libcheckisomd5 PROPERTIES
-  OUTPUT_NAME checkisomd5
+  PREFIX ""
   PUBLIC_HEADER include/libcheckisomd5.h)
 
 # Check if popt exists because it doesn't exist in mingw.
@@ -71,10 +71,9 @@ endif()
 find_package(PythonLibs ${PYTHON_VERSION})
 if(PythonLibs_FOUND)
   include_directories(${PYTHON_INCLUDE_DIRS})
-  # FIXME(squimrel): Library should be named pyisomd5sum.so insteead of libpyisomd5sum.so.
   add_library(pyisomd5sum SHARED src/pyisomd5sum.c)
-  set_target_properties(pyisomd5sum PROPERTIES LIBRARY_OUTPUT_NAME pyisomd5sum)
-  target_link_libraries(pyisomd5sum libimplantisomd5 libcheckisomd5)
+  set_target_properties(pyisomd5sum PROPERTIES PREFIX "")
+  target_link_libraries(pyisomd5sum libimplantisomd5 libcheckisomd5 ${PYTHON_LIBRARIES})
 
   find_package(PythonInterp ${PYTHON_VERSION})
   if(PythonInterp_FOUND)
@@ -84,6 +83,8 @@ import sys\n\
 import site\n\
 sitepackages = site.getsitepackages()[0][1:]\n\
 if sitepackages.startswith('usr/'):\n\
+  sitepackages = sitepackages.split('/', 1)[1]\n\
+if sitepackages.startswith('local/'):\n\
   sitepackages = sitepackages.split('/', 1)[1]\n\
 sys.stdout.write(sitepackages)"
       OUTPUT_VARIABLE PYTHON_SITE_PACKAGES)

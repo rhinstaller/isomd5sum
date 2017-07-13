@@ -32,6 +32,8 @@
 size_t getpagesize();
 
 void *aligned_alloc(size_t size, size_t alignment);
+#elif __APPLE__
+void *aligned_alloc(size_t size, size_t alignment);
 #endif
 
 #ifndef O_BINARY

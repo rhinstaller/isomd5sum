@@ -42,6 +42,12 @@ size_t getpagesize() {
 void *aligned_alloc(size_t size, size_t alignment) {
     return _aligned_malloc(size, alignment);
 }
+#elif __APPLE__
+void *aligned_alloc(size_t size, size_t alignment) {
+    void *buffer = NULL;
+    posix_memalign(&buffer, alignment, size);
+    return buffer;
+}
 #endif
 
 static unsigned char *read_primary_volume_descriptor(const int fd, off_t *const offset) {
