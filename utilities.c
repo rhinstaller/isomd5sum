@@ -131,9 +131,9 @@ struct volume_info *const parsepvd(const int isofd) {
     buffer[APPDATA_SIZE - 1] = '\0';
 
     struct volume_info *result = malloc(sizeof(struct volume_info));
-    result->skipsectors = 20;
+    result->skipsectors = SKIPSECTORS;
     result->supported = 0;
-    result->fragmentcount = 20;
+    result->fragmentcount = FRAGMENT_COUNT;
     result->offset = offset;
     result->isosize = isosize(aligned_buffer);
 

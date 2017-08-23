@@ -106,6 +106,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
     buffer = aligned_alloc(pagesize, buffer_size * sizeof(*buffer));
 
     const off_t total_size = isosize - SKIPSECTORS * SECTOR_SIZE;
+    const off_t fragment_size = total_size / (FRAGMENT_COUNT + 1);
     size_t previous_fragment = 0UL;
     off_t offset = 0LL;
     while (offset < total_size) {
@@ -115,7 +116,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
             break;
 
         MD5_Update(&hashctx, buffer, (unsigned int) nread);
-        const size_t current_fragment = (size_t) offset * (FRAGMENT_COUNT + 1) / (size_t) total_size;
+        const size_t current_fragment = offset / fragment_size;
         const size_t fragmentsize = FRAGMENT_SUM_SIZE / FRAGMENT_COUNT;
         /* If we're onto the next fragment, calculate the previous sum and check. */
         if (current_fragment != previous_fragment) {
