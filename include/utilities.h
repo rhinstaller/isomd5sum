@@ -31,9 +31,9 @@
 #ifdef _WIN32
 size_t getpagesize();
 
-void *aligned_alloc(size_t size, size_t alignment);
+void *aligned_alloc(size_t alignment, size_t size);
 #elif __APPLE__
-void *aligned_alloc(size_t size, size_t alignment);
+void *aligned_alloc(size_t alignment, size_t size);
 #endif
 
 #ifndef O_BINARY

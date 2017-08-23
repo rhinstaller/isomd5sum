@@ -39,11 +39,11 @@ size_t getpagesize() {
     return page_size;
 }
 
-void *aligned_alloc(size_t size, size_t alignment) {
+void *aligned_alloc(size_t alignment, size_t size) {
     return _aligned_malloc(size, alignment);
 }
 #elif __APPLE__
-void *aligned_alloc(size_t size, size_t alignment) {
+void *aligned_alloc(size_t alignment, size_t size) {
     void *buffer = NULL;
     posix_memalign(&buffer, alignment, size);
     return buffer;
