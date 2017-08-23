@@ -40,7 +40,12 @@ size_t getpagesize() {
 }
 
 void *aligned_alloc(size_t alignment, size_t size) {
-    return _aligned_malloc(size, alignment);
+    /*
+     * Windows throws "Invalid address specified to RtlFreeHeap" warnings so
+     * let's not do this for now.
+     * return _aligned_malloc(size, alignment);
+     */
+    return malloc(size);
 }
 #elif __APPLE__
 void *aligned_alloc(size_t alignment, size_t size) {
