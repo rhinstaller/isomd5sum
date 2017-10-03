@@ -13,7 +13,7 @@ def pass_fail(rc, pass_value, pass_all):
 
 
 # create iso file
-os.system("genisoimage -quiet . > testiso.iso")
+os.system("mkisofs -quiet . > testiso.iso")
 
 # implant it
 (rstr, pass_all) = pass_fail(pyisomd5sum.implantisomd5sum("testiso.iso", 1, 0), 0, True)
