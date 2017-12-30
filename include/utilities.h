@@ -29,7 +29,11 @@
 #include "md5.h"
 
 #ifdef _WIN32
-int getpagesize() { return 2048; }
+size_t getpagesize();
+
+void *aligned_alloc(size_t alignment, size_t size);
+#elif __APPLE__
+void *aligned_alloc(size_t alignment, size_t size);
 #endif
 
 #ifndef O_BINARY
@@ -50,12 +54,12 @@ int getpagesize() { return 2048; }
 #define SIZE_OFFSET 84
 /* Number of sectors to ignore at end of iso when computing sum. These are
  * ignored due to problems reading last few sectors on burned CDs. */
-#define SKIPSECTORS 15LL
-#define SECTOR_SIZE 2048LL
-#define NUM_SYSTEM_SECTORS 16LL
+#define SKIPSECTORS 15L
+#define SECTOR_SIZE 2048L
+#define NUM_SYSTEM_SECTORS 16L
 #define SYSTEM_AREA_SIZE (NUM_SYSTEM_SECTORS * SECTOR_SIZE)
 /* According to ECMA-119 8.4.32 */
-#define APPDATA_OFFSET 883LL
+#define APPDATA_OFFSET 883L
 #define APPDATA_SIZE 512
 
 struct volume_info {

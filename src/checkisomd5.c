@@ -24,8 +24,8 @@
 #include <popt.h>
 #include <termios.h>
 
-#include "md5.h"
-#include "libcheckisomd5.h"
+#include "./include/libcheckisomd5.h"
+#include "./include/md5.h"
 
 struct progressCBData {
     int verbose;

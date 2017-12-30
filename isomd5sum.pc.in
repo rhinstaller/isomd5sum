@@ -1,9 +1,12 @@
-includedir=@includedir@
-libdir=@libdir@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+includedir=${prefix}/include
+libdir=${exec_prefix}/@LIBDIR@
 
-Name: isomd5sum
-Description: Utilities for working with md5sum implanted in ISO images
-URL: https://github.com/rhinstaller/isomd5sum
+Name: @CMAKE_PROJECT_NAME@
 Version: @VERSION@
+Description: The isomd5sum package contains utilities for implanting and
+verifying an md5sum implanted into an ISO9660 image.
+URL: https://github.com/rhinstaller/isomd5sum
 Cflags: -I${includedir}
 Libs: -L${libdir}

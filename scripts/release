@@ -1,0 +1,13 @@
+#!/bin/sh
+readonly VERSION="${1}"
+if ! git diff-index --quiet HEAD --; then
+  echo "Can't release version ${VERSION} while there are uncommitted changes."
+  exit 1
+fi
+cd "$(git rev-parse --show-toplevel)"
+sed -i "s/^set(VERSION .*/set(VERSION \"${VERSION}\")/" CMakeLists.txt
+git add CMakeLists.txt
+git commit -m "New Version ${VERSION}"
+git tag -a -m "Tag as ${VERSION}" -f "${VERSION}"
+echo "New version tagged. Go release it once you're ready:"
+echo "git push origin ${VERSION}"

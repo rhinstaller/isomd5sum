@@ -20,13 +20,26 @@
  */
 
 #include <string.h>
-#include <endian.h>
-#include "md5.h"
+
+#include "./include/md5.h"
+
+
+enum Endian { BIG_ENDIAN = 0, LITTLE_ENDIAN = 1 };
+
+/**
+ * Any detection will always be compile-time and not conform to the standards
+ * plus little endian is more popular these days so this should be just fine.
+ */
+#if defined(__BYTE_ORDER) && __BYTE_ORDER == __BIG_ENDIAN ||                 \
+    defined(__BIG_ENDIAN__) || defined(__ARMEB__) || defined(__THUMBEB__) || \
+    defined(__AARCH64EB__) || defined(_MIBSEB) || defined(__MIBSEB) ||       \
+    defined(__MIBSEB__)
+#define ENDIANNESS BIG_ENDIAN
+#else
+#define ENDIANNESS LITTLE_ENDIAN
+#endif
 
 void MD5_Transform(uint32 *buf, uint32 const *in);
-
-#define IS_BIG_ENDIAN() (__BYTE_ORDER == __BIG_ENDIAN)
-#define IS_LITTLE_ENDIAN() (__BYTE_ORDER == __LITTLE_ENDIAN)
 
 static void byteReverse(unsigned char *buf, unsigned longs);
 
@@ -61,7 +74,7 @@ void MD5_Init(struct MD5Context *ctx)
         ctx->bits[1] = 0;
 
 
-        if (IS_BIG_ENDIAN())
+        if (ENDIANNESS == BIG_ENDIAN)
              ctx->doByteReverse = 1;
         else 
              ctx->doByteReverse = 0;

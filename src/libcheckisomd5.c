@@ -29,9 +29,9 @@
 #include <fcntl.h>
 #include <string.h>
 
-#include "md5.h"
-#include "libcheckisomd5.h"
-#include "utilities.h"
+#include "./include/libcheckisomd5.h"
+#include "./include/md5.h"
+#include "./include/utilities.h"
 
 static void clear_appdata(unsigned char *const buffer, const size_t size, const off_t appdata_offset, const off_t offset) {
     static const ssize_t buffer_start = 0;
@@ -59,9 +59,10 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     MD5_CTX hashctx;
     MD5_Init(&hashctx);
 
+    const size_t pagesize = (size_t) getpagesize();
     const size_t buffer_size = NUM_SYSTEM_SECTORS * SECTOR_SIZE;
     unsigned char *buffer;
-    buffer = aligned_alloc((size_t) getpagesize(), buffer_size * sizeof(*buffer));
+    buffer = aligned_alloc(pagesize, buffer_size * sizeof(*buffer));
 
     size_t previous_fragment = 0UL;
     off_t offset = 0LL;
@@ -149,7 +150,7 @@ int printMD5SUM(const char *file) {
     printf("%s:   %s\n", file, info->hashsum);
     if (strlen(info->fragmentsums) > 0 && info->fragmentcount > 0) {
         printf("Fragment sums: %s\n", info->fragmentsums);
-        printf("Fragment count: %zu\n", info->fragmentcount);
+        printf("Fragment count: %lu\n", (unsigned long) (info->fragmentcount));
         printf("Supported ISO: %s\n", info->supported ? "yes" : "no");
     }
     free(info);

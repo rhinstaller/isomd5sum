@@ -1,0 +1,4 @@
+#!/bin/sh
+readonly VERSION="$(sh "$(git rev-parse --show-toplevel)/scripts/version.sh")"
+git archive --format=tar --prefix=isomd5sum-${VERSION}/ HEAD | \
+  bzip2 > isomd5sum-${VERSION}.tar.bz2

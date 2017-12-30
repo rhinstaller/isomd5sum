@@ -22,8 +22,8 @@
 #include <stdlib.h>
 #include <popt.h>
 
-#include "md5.h"
-#include "libimplantisomd5.h"
+#include "./include/libimplantisomd5.h"
+#include "./include/md5.h"
 
 static int usage(void) {
     fprintf(stderr, "implantisomd5:         implantisomd5 [--force] [--supported-iso] <isofilename>\n");
