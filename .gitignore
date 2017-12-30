@@ -1,5 +1,6 @@
 checkisomd5
 implantisomd5
+build/
 *.o
 *.so
 *~
