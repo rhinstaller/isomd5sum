@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
+set(VERSION "1.3.0")
+execute_process(COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/version.sh "${VERSION}"
+  OUTPUT_VARIABLE VERSION)
 project(isomd5sum)
 
 if(NOT DEFINED BINDIR)
@@ -23,8 +26,6 @@ else()
   endif()
 endif()
 
-execute_process(COMMAND sh ${CMAKE_SOURCE_DIR}/scripts/version.sh
-  OUTPUT_VARIABLE VERSION)
 set(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -std=gnu11 -Wall -fPIC")
 
 configure_file(${CMAKE_PROJECT_NAME}.pc.in
