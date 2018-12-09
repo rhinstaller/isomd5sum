@@ -73,4 +73,4 @@ archive:
 	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
 
 test:
-	./testpyisomd5sum.py
+	$(PYTHON) ./testpyisomd5sum.py
