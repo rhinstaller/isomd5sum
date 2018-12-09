@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os
+import subprocess
 import pyisomd5sum
 
 # Pass in the rc, the expected value and the pass_all state
@@ -13,7 +14,16 @@ def pass_fail(rc, pass_value, pass_all):
 
 
 # create iso file
-os.system("mkisofs -quiet . > testiso.iso")
+try:
+    # Python 3
+    catch_error = FileNotFoundError
+except NameError:
+    # Python 2
+    catch_error = OSError
+try:
+    subprocess.check_call(["mkisofs", "-quiet", "-o", "testiso.iso", "."])
+except catch_error:
+    subprocess.check_call(["genisoimage", "-quiet", "-o", "testiso.iso", "."])
 
 # implant it
 (rstr, pass_all) = pass_fail(pyisomd5sum.implantisomd5sum("testiso.iso", 1, 0), 0, True)
