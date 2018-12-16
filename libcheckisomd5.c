@@ -149,7 +149,7 @@ int printMD5SUM(const char *file) {
     printf("%s:   %s\n", file, info->hashsum);
     if (strlen(info->fragmentsums) > 0 && info->fragmentcount > 0) {
         printf("Fragment sums: %s\n", info->fragmentsums);
-        printf("Fragment count: %zu\n", info->fragmentcount);
+        printf("Fragment count: %Lu\n", info->fragmentcount);
         printf("Supported ISO: %s\n", info->supported ? "yes" : "no");
     }
     free(info);
