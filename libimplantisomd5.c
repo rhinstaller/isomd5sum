@@ -194,6 +194,6 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         return -1;
     }
 
-    errstr = NULL;
+    *errstr = NULL;
     return 0;
 }
