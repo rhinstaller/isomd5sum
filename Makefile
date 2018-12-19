@@ -10,7 +10,8 @@ else
 LIBDIR = lib
 endif
 
-CFLAGS += -std=gnu11 -Wall -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1 -fPIC $(PYTHONINCLUDE)
+GCCDEFINES = -D_GNU_SOURCE=1 -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE=1 -D_LARGEFILE64_SOURCE=1
+CFLAGS += -std=gnu11 $(GCCDEFINES) -Wall -fPIC $(PYTHONINCLUDE)
 
 OBJECTS = md5.o libimplantisomd5.o checkisomd5.o implantisomd5
 SOURCES = $(patsubst %.o,%.c,$(OBJECTS))
@@ -77,3 +78,7 @@ test:	pyisomd5sum.so
 	$(PYTHON) ./testpyisomd5sum.py 200
 	@echo "Testing with small iso"
 	$(PYTHON) ./testpyisomd5sum.py
+
+cppcheck:
+	cppcheck --platform=unix64 --quiet $(GCCDEFINES) -U NULL --enable=all $(PYTHONINCLUDE) --force .
+	cppcheck --platform=unix32 --quiet $(GCCDEFINES) -U NULL --enable=all $(PYTHONINCLUDE) --force .
