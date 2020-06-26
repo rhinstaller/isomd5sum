@@ -2,6 +2,28 @@ isomd5sum provides a way of making use of the ISO9660 application data
 area to store md5sum data about the iso.  This allows you to check the
 iso given nothing more than the iso itself.
 
+You will need the following packages:
+
+  autoconf
+  automake
+  libtool
+  m4
+  popt-devel
+  python3-devel
+
+To configure:
+
+  autoreconf -ifv
+  ./configure
+
+To build and install checkisomd5 and implantisomd5:
+
+  sudo make install
+
+To build and install pyisomd5sum:
+
+  sudo python3 setup.py install
+
 isomd5sum is hosted on GitHub. The source can be
 grabbed via git with
   git clone https://github.com/rhinstaller/isomd5sum.git

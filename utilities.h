@@ -18,8 +18,8 @@
 #ifndef ISOMD5_UTILITIES_H
 #define ISOMD5_UTILITIES_H
 
-#ifndef _FILE_OFFSET_BITS
-#define _FILE_OFFSET_BITS 64
+#ifdef HAVE_CONFIG_H
+#include "config.h"
 #endif
 
 #include <stdbool.h>

@@ -1,0 +1,31 @@
+from distutils.core import setup, Extension
+
+
+define_macros = []
+for k in "@DEFS@".split(" "):
+    if not k.startswith("-D"):
+        continue
+    k = k[2:]
+    if "=" in k:
+        define_macros.append(tuple(k.split("=")))
+    else:
+        define_macros.append((k, None))
+
+
+setup(
+    name="pyisomd5sum",
+    version="@VERSION@",
+    ext_modules=[
+        Extension(
+            "pyisomd5sum",
+            [
+                "pyisomd5sum.c",
+                "libimplantisomd5.c",
+                "libcheckisomd5.c",
+                "md5.c",
+                "utilities.c",
+            ],
+            define_macros=define_macros,
+        )
+    ],
+)

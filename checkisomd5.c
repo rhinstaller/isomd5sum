@@ -18,6 +18,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -69,6 +73,7 @@ static int outputCB(void *const co, const long long offset, const long long tota
 }
 
 static int usage(void) {
+    fprintf(stderr, "%s\n\n", PACKAGE_STRING);
     fprintf(stderr, "Usage: checkisomd5 [--md5sumonly] [--verbose] [--gauge] <isofilename>|<blockdevice>\n\n");
     return 1;
 }

@@ -1,6 +1,10 @@
 #ifndef __LIBCHECKISOMD5_H__
 #define __LIBCHECKISOMD5_H__
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
