@@ -73,4 +73,7 @@ archive:
 	@echo "The final archive is in isomd5sum-$(VERSION).tar.bz2"
 
 test:
+	@echo "Testing with large iso"
+	$(PYTHON) ./testpyisomd5sum.py 200
+	@echo "Testing with small iso"
 	$(PYTHON) ./testpyisomd5sum.py
