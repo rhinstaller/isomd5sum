@@ -1,0 +1,23 @@
+name: Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    container:
+      image: registry.fedoraproject.org/fedora:34
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and Test
+        run: |
+          dnf install -y gcc popt-devel python3 python3-devel make xorriso
+          make
+          make test
