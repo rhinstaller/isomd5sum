@@ -4,7 +4,7 @@ PYTHONINCLUDE := $(shell $(PYTHON)-config --includes)
 
 VERSION=1.2.3
 
-ifneq (,$(filter sparc64 ppc64 ppc64le x86_64 s390x aarch64 mips64,$(shell uname -m)))
+ifneq (,$(filter sparc64 ppc64 ppc64le x86_64 s390x aarch64 mips64 loongarch64,$(shell uname -m)))
 LIBDIR = lib64
 else
 LIBDIR = lib
