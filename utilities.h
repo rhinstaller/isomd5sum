@@ -61,8 +61,8 @@ int getpagesize() { return 2048; }
 struct volume_info {
     char hashsum[HASH_SIZE + 1];
     char fragmentsums[FRAGMENT_SUM_SIZE + 1];
-    size_t supported;
-    size_t fragmentcount;
+    off_t supported;
+    off_t fragmentcount;
     off_t offset;
     off_t isosize;
     off_t skipsectors;
