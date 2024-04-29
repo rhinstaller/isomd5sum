@@ -66,7 +66,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
     size_t previous_fragment = 0UL;
     off_t offset = 0LL;
     while (offset < total_size) {
-        const size_t nbyte = MIN((size_t)(total_size - offset), MIN(fragment_size, buffer_size));
+        const size_t nbyte = MIN((size_t)(total_size - offset), buffer_size);
 
         ssize_t nread = read(isofd, buffer, nbyte);
         if (nread <= 0L)
@@ -89,7 +89,7 @@ static enum isomd5sum_status checkmd5sum(int isofd, checkCallback cb, void *cbda
             const size_t current_fragment = offset / fragment_size;
             const size_t fragmentsize = FRAGMENT_SUM_SIZE / info->fragmentcount;
             /* If we're onto the next fragment, calculate the previous sum and check. */
-            if (current_fragment != previous_fragment && current_fragment < info->fragmentcount) {
+            if (current_fragment != previous_fragment) {
                 if (!validate_fragment(&hashctx, current_fragment, fragmentsize,
                                        info->fragmentsums, NULL)) {
                     /* Exit immediately if current fragment sum is incorrect */

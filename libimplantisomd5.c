@@ -109,8 +109,8 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
     const off_t fragment_size = total_size / (FRAGMENT_COUNT + 1);
     size_t previous_fragment = 0UL;
     off_t offset = 0LL;
-    while (offset < total_size && previous_fragment < FRAGMENT_COUNT) {
-        const size_t nbyte = MIN((size_t)(total_size - offset), MIN(fragment_size, buffer_size));
+    while (offset < total_size) {
+        const size_t nbyte = MIN((size_t)(total_size - offset), buffer_size);
         ssize_t nread = read(isofd, buffer, nbyte);
         if (nread <= 0L)
             break;
@@ -119,7 +119,7 @@ int implantISOFD(int isofd, int supported, int forceit, int quiet, char **errstr
         const size_t current_fragment = offset / fragment_size;
         const size_t fragmentsize = FRAGMENT_SUM_SIZE / FRAGMENT_COUNT;
         /* If we're onto the next fragment, calculate the previous sum and check. */
-        if (current_fragment != previous_fragment && current_fragment < FRAGMENT_COUNT) {
+        if (current_fragment != previous_fragment) {
             validate_fragment(&hashctx, current_fragment, fragmentsize, NULL, fragmentsums);
             previous_fragment = current_fragment;
         }
