@@ -21,9 +21,9 @@ except NameError:
     # Python 2
     catch_error = OSError
 try:
-    subprocess.check_call(["mkisofs", "-quiet", "-o", "testiso.iso", "."])
+    subprocess.check_call(["mkisofs", "-o", "testiso.iso", "."])
 except catch_error:
-    subprocess.check_call(["genisoimage", "-quiet", "-o", "testiso.iso", "."])
+    subprocess.check_call(["genisoimage", "-o", "testiso.iso", "."])
 
 # implant it
 (rstr, pass_all) = pass_fail(pyisomd5sum.implantisomd5sum("testiso.iso", 1, 0), 0, True)
